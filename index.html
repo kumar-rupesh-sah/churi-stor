@@ -46,7 +46,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* मोबाइल पर एक बार में एक ही बड़ा प्रोडक्ट/इमेज दिखेगा */
         .product-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
         @media (min-width: 768px) {
             .product-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
@@ -66,9 +65,12 @@
         .selling-price { color: #e91e63; font-weight: bold; font-size: 16px; }
         .mrp-price { color: #999; text-decoration: line-through; font-size: 13px; font-weight: normal; }
 
-        .qty-box { display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .qty-box { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; }
         input[type="number"].qty { width: 65px; padding: 6px; text-align: center; font-weight: bold; font-size: 15px; border: 1px solid #ccc; border-radius: 4px; }
         .unit-text { font-size: 13px; color: #666; font-weight: bold; }
+
+        /* नया जोड़ा गया कस्टम साइज और कलर बॉक्स */
+        .item-custom-notes { width: 100%; padding: 6px; font-size: 13px; border: 1px solid #f8bbd0; border-radius: 4px; background: #fff9fa; outline: none; box-sizing: border-box; }
 
         .custom-item-box { background: #fdf2f4; border: 1px solid #f8bbd0; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
         .custom-item-box h4 { margin-top: 0; color: #ad1457; font-size: 15px; margin-bottom: 10px; }
@@ -161,7 +163,6 @@
         <input type="text" id="searchBox" class="search-box" placeholder="🔍 यहाँ चूड़ी या कंगन का नाम खोजें..." onkeyup="searchProducts()">
     </div>
 
-    <!-- 6 हिंदी टैब मेनू (जो आपकी गूगल शीट में हैं) -->
     <div class="tab-menu">
         <button class="tab-btn active" onclick="openTab(event, 'tab1')">💍 दुल्हन सेट</button>
         <button class="tab-btn" onclick="openTab(event, 'tab2')">🔴 लाख की चूड़ी</button>
@@ -276,14 +277,13 @@
 </div>
 
 <script>
-    // आपका गूगल स्क्रिप्ट वेब एप यूआरएल यहाँ सेट है
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzui76TbvgUO0GGYyd_vHakyRRrPqWkJY7hKfQ5Aw_wMAqIYscvNr--IbMsVfEq9GtWRA/exec";
 
     let dTab1 = JSON.parse(localStorage.getItem('gc_bangle_t1')) || [{name: "शाही दुल्हन चूड़ा सेट", mrp: 1200, price: 899, unit: "सेट", img: ""}];
     let dTab2 = JSON.parse(localStorage.getItem('gc_bangle_t2')) || [{name: "शुद्ध लाख की लाल चूड़ी", mrp: 400, price: 299, unit: "दर्जन", img: ""}];
     let dTab3 = JSON.parse(localStorage.getItem('gc_bangle_t3')) || [{name: "चमकदार कांच की चूड़ियाँ", mrp: 150, price: 99, unit: "दर्जन", img: ""}];
     let dTab4 = JSON.parse(localStorage.getItem('gc_bangle_t4')) || [{name: "पॉश मैटल कंगन जोड़ा", mrp: 300, price: 199, unit: "जोड़ी", img: ""}];
-    let dTab5 = JSON.parse(localStorage.getItem('gc_bangle_t5')) || [{name: "राजपूत डिज़ाइनर कंगन", mrp: 500, price: 350, unit: "जोड़ी", img: ""}];
+    let dTab5 = JSON.parse(localStorage.getItem('gc_bangle_t5')) || [{name: "राजपूत डिज़ाइनर कंगन", mrp: 500, price: 350, unit: "जोड़ी", img: ""}];
     let dTab6 = JSON.parse(localStorage.getItem('gc_bangle_t6')) || [{name: "बच्चों की रंगबिरंगी चूड़ी", mrp: 100, price: 69, unit: "सेट", img: ""}];
 
     let selectedFeedbackRating = "";
@@ -464,6 +464,7 @@
                         <span class="unit-text">मात्रा (${it.unit}):</span>
                         <input type="number" id="${pre}_qty_${i}" class="qty" min="0" value="0" oninput="calcTotal()">
                     </div>
+                    <input type="text" id="${pre}_note_${i}" class="item-custom-notes" placeholder="साइज (जैसे- 2.4, 2.6) या कलर लिखें">
                 </div>
             </div>`;
         });
@@ -505,6 +506,7 @@
                                 <span class="unit-text">मात्रा (${it.unit}):</span>
                                 <input type="number" id="${c.pre}_qty_${i}" class="qty" min="0" value="0" oninput="calcTotal()">
                             </div>
+                            <input type="text" id="${c.pre}_note_${i}" class="item-custom-notes" placeholder="साइज (जैसे- 2.4, 2.6) या कलर लिखें">
                         </div>
                     </div>`;
                 }
@@ -530,7 +532,9 @@
                     if(qty > 0) {
                         let itemTotal = qty * it.price;
                         subtotal += itemTotal;
-                        billHtml += `<li><span>${it.name} (×${qty} ${it.unit})</span> <span>₹${itemTotal}</span></li>`;
+                        let noteEl = document.getElementById(`${c.pre}_note_${i}`);
+                        let noteText = noteEl && noteEl.value.trim() ? ` [साइज/कलर: ${noteEl.value.trim()}]` : '';
+                        billHtml += `<li><span>${it.name}${noteText} (×${qty} ${it.unit})</span> <span>₹${itemTotal}</span></li>`;
                     }
                 }
             });
@@ -609,7 +613,9 @@
                     let qty = parseInt(el.value) || 0;
                     if(qty > 0) {
                         hasItems = true;
-                        msg += `• ${it.name} - ${qty} ${it.unit} (₹${qty * it.price})\n`;
+                        let noteEl = document.getElementById(`${c.pre}_note_${i}`);
+                        let noteText = noteEl && noteEl.value.trim() ? ` (साइज/कलर: ${noteEl.value.trim()})` : '';
+                        msg += `• ${it.name}${noteText} - ${qty} ${it.unit} (₹${qty * it.price})\n`;
                     }
                 }
             });
