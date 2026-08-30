@@ -87,26 +87,28 @@
         .flex-row > * { flex: 1 1 100%; }
         @media(min-width: 600px) { .flex-row > * { flex: 1; } }
         .hidden { display: none; }
+        
         .header-bar { 
             position: sticky; top: 0; background: #ffffff; z-index: 999; 
             display: flex; justify-content: space-between; align-items: center; 
-            border-bottom: 2px solid #e5e7eb; padding: 10px 5px; margin-bottom: 15px; 
-            gap: 5px; flex-wrap: wrap;
+            border-bottom: 2px solid #e5e7eb; padding: 10px 8px; margin-bottom: 15px; 
+            gap: 5px;
         }
         
         .stock-btn-container { position: relative; display: inline-block; }
-        .stock-main-btn { background-color: var(--success); color: white; padding: 8px 12px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; border-radius: 8px; width: auto; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
-        .stock-dropdown-content { display: none; position: absolute; left: 0; background-color: white; width: 260px; box-shadow: 0px 8px 20px rgba(0,0,0,0.15); z-index: 1000; border-radius: 8px; border: 1px solid #e5e7eb; max-height: 80vh; overflow-y: auto; }
+        .stock-main-btn { background-color: var(--success); color: white; padding: 8px 12px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; border-radius: 8px; width: auto; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); white-space: nowrap; }
+        .stock-dropdown-content { display: none; position: absolute; left: 0; top: 100%; background-color: white; width: 260px; box-shadow: 0px 8px 20px rgba(0,0,0,0.2); z-index: 1000; border-radius: 8px; border: 1px solid #e5e7eb; max-height: 80vh; overflow-y: auto; margin-top: 4px; }
         .stock-dropdown-content button { color: #374151; padding: 10px 14px; text-decoration: none; display: block; width: 100%; border: none; background: none; text-align: left; font-size: 14px; cursor: pointer; border-bottom: 1px solid #f3f4f6; }
         .stock-dropdown-content button:hover { background-color: #f3f4f6; color: var(--primary); }
         .stock-show { display: block; }
 
         .menu-container { position: relative; display: inline-block; }
-        .menu-btn { background-color: #4b5563; color: white; padding: 8px 12px; font-size: 16px; border: none; cursor: pointer; border-radius: 8px; width: auto; }
-        .menu-content { display: none; position: absolute; right: 0; background-color: white; width: 260px; box-shadow: 0px 8px 20px rgba(0,0,0,0.15); z-index: 1000; border-radius: 8px; border: 1px solid #e5e7eb; max-height: 80vh; overflow-y: auto; }
-        .menu-content button, .menu-content a { color: #374151; padding: 12px 16px; text-decoration: none; display: block; width: 100%; border: none; background: none; text-align: left; font-size: 15px; cursor: pointer; }
+        .menu-btn { background-color: #4b5563; color: white; padding: 8px 12px; font-size: 16px; border: none; cursor: pointer; border-radius: 8px; width: auto; white-space: nowrap; }
+        .menu-content { display: none; position: absolute; right: 0; top: 100%; background-color: white; width: 260px; box-shadow: 0px 8px 20px rgba(0,0,0,0.2); z-index: 1000; border-radius: 8px; border: 1px solid #e5e7eb; max-height: 80vh; overflow-y: auto; margin-top: 4px; }
+        .menu-content button, .menu-content a { color: #374151; padding: 12px 16px; text-decoration: none; display: block; width: 100%; border: none; background: none; text-align: left; font-size: 15px; cursor: pointer; border-bottom: 1px solid #f3f4f6; }
         .menu-content button:hover, .menu-content a:hover { background-color: #f3f4f6; color: var(--primary); }
         .show { display: block; }
+
         .tab-section { display: none; }
         .tab-section.active { display: block; }
         #scanner-container { width: 100%; margin: 10px auto; display: none; }
@@ -181,8 +183,9 @@
 
     <div id="appSection" class="hidden">
         <div class="header-bar">
+            <!-- बाईं ओर स्टॉक मेनू -->
             <div class="stock-btn-container">
-                <button onclick="toggleStockMenu()" class="stock-main-btn">📦 स्टॉक मेनू ▼</button>
+                <button onclick="toggleStockMenu()" class="stock-main-btn">📦 स्टॉक ▼</button>
                 <div id="stockDropdownMenu" class="stock-dropdown-content">
                     <button onclick="switchTab('stockTab')">📦 नया माल चढ़ाएं</button>
                     <button onclick="switchTab('masterTab')">➕ सिंगल प्रोडक्ट जोड़ें</button>
@@ -194,13 +197,15 @@
                 </div>
             </div>
 
-            <div style="flex: 1; text-align: center; padding: 0 2px;">
-                <h2 id="shopTitleHeader" style="margin: 0; color: var(--primary); font-size: 0.95rem;">🛒 किराना स्मार्ट सिस्टम</h2>
+            <!-- बीच में दुकान का नाम -->
+            <div style="flex: 1; text-align: center; overflow: hidden; padding: 0 4px;">
+                <h2 id="shopTitleHeader" style="margin: 0; color: var(--primary); font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🛒 किराना स्मार्ट सिस्टम</h2>
             </div>
 
+            <!-- दाहिनी ओर थ्री डॉट मेनू और लॉग-आउट बटन -->
             <div style="display: flex; gap: 4px; align-items: center;">
                 <div class="menu-container">
-                    <button onclick="toggleMenu()" class="menu-btn">☰ मेनू</button>
+                    <button onclick="toggleMenu()" class="menu-btn">☰</button>
                     <div id="threeDotMenu" class="menu-content">
                         <button onclick="switchTab('billingTab')">🧾 बिलिंग काउंटर</button>
                         <button onclick="switchTab('customerMasterTab')">👥 कस्टमर डायरेक्टरी</button>
@@ -211,7 +216,7 @@
                         <button onclick="toggleMenu()" style="color: var(--danger); background: #fee2e2; font-weight: bold; text-align: center;">✕ मेनू बंद करें</button>
                     </div>
                 </div>
-                <button onclick="logout()" class="btn btn-danger" style="width: auto; padding: 8px 10px; font-size: 13px;" title="लॉग-आउट">🔒 लॉग-आउट</button>
+                <button onclick="logout()" class="btn btn-danger" style="width: auto; padding: 8px 10px; font-size: 13px;" title="लॉग-आउट">🔒</button>
             </div>
         </div>
 
@@ -1385,7 +1390,6 @@
         alert("सेटिंग्स सहेजी गईं!");
     }
 
-    // ऑटो-डिटेक्ट एक्सेल / सीएसवी फाइल अपलोड फंक्शन (सभी फॉर्मेट्स सपोर्टेड)
     function handleExcelFileUpload(event) {
         let file = event.target.files[0];
         if (!file) return;
@@ -1396,7 +1400,6 @@
         reader.readAsText(file);
     }
 
-    // एडवांस्ड बल्क डंप फंक्शन जो किसी भी फॉर्मेट (Comma, Tab, Semicolon) को रीड कर लेगा
     function processBulkUpload() {
         let rawData = document.getElementById('bulkDataInput').value.trim();
         if (!rawData) {
