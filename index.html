@@ -87,30 +87,26 @@
         .flex-row > * { flex: 1 1 100%; }
         @media(min-width: 600px) { .flex-row > * { flex: 1; } }
         .hidden { display: none; }
-        
-        /* मोबाइल फ्रेंडली हेडर बार */
         .header-bar { 
             position: sticky; top: 0; background: #ffffff; z-index: 999; 
             display: flex; justify-content: space-between; align-items: center; 
-            border-bottom: 2px solid #e5e7eb; padding: 10px 8px; margin-bottom: 15px; 
-            gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-bottom: 2px solid #e5e7eb; padding: 10px 5px; margin-bottom: 15px; 
+            gap: 5px; flex-wrap: wrap;
         }
         
         .stock-btn-container { position: relative; display: inline-block; }
-        .stock-main-btn { background-color: var(--success); color: white; padding: 8px 10px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; border-radius: 8px; width: auto; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
-        .stock-dropdown-content { display: none; position: absolute; left: 0; background-color: white; width: 240px; box-shadow: 0px 8px 20px rgba(0,0,0,0.2); z-index: 1000; border-radius: 8px; border: 1px solid #e5e7eb; max-height: 80vh; overflow-y: auto; }
+        .stock-main-btn { background-color: var(--success); color: white; padding: 8px 12px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; border-radius: 8px; width: auto; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+        .stock-dropdown-content { display: none; position: absolute; left: 0; background-color: white; width: 260px; box-shadow: 0px 8px 20px rgba(0,0,0,0.15); z-index: 1000; border-radius: 8px; border: 1px solid #e5e7eb; max-height: 80vh; overflow-y: auto; }
         .stock-dropdown-content button { color: #374151; padding: 10px 14px; text-decoration: none; display: block; width: 100%; border: none; background: none; text-align: left; font-size: 14px; cursor: pointer; border-bottom: 1px solid #f3f4f6; }
         .stock-dropdown-content button:hover { background-color: #f3f4f6; color: var(--primary); }
         .stock-show { display: block; }
 
         .menu-container { position: relative; display: inline-block; }
-        .menu-btn { background-color: #4b5563; color: white; padding: 8px 10px; font-size: 13px; border: none; cursor: pointer; border-radius: 8px; width: auto; font-weight: bold; }
-        /* मेनू को स्क्रीन के अंदर फिट करने और सही से खोलने के लिए right: 0 किया गया है */
-        .menu-content { display: none; position: absolute; right: 0; background-color: white; width: 240px; box-shadow: 0px 8px 20px rgba(0,0,0,0.2); z-index: 1000; border-radius: 8px; border: 1px solid #e5e7eb; max-height: 80vh; overflow-y: auto; }
-        .menu-content button, .menu-content a { color: #374151; padding: 10px 14px; text-decoration: none; display: block; width: 100%; border: none; background: none; text-align: left; font-size: 14px; cursor: pointer; }
+        .menu-btn { background-color: #4b5563; color: white; padding: 8px 12px; font-size: 16px; border: none; cursor: pointer; border-radius: 8px; width: auto; }
+        .menu-content { display: none; position: absolute; right: 0; background-color: white; width: 260px; box-shadow: 0px 8px 20px rgba(0,0,0,0.15); z-index: 1000; border-radius: 8px; border: 1px solid #e5e7eb; max-height: 80vh; overflow-y: auto; }
+        .menu-content button, .menu-content a { color: #374151; padding: 12px 16px; text-decoration: none; display: block; width: 100%; border: none; background: none; text-align: left; font-size: 15px; cursor: pointer; }
         .menu-content button:hover, .menu-content a:hover { background-color: #f3f4f6; color: var(--primary); }
         .show { display: block; }
-
         .tab-section { display: none; }
         .tab-section.active { display: block; }
         #scanner-container { width: 100%; margin: 10px auto; display: none; }
@@ -184,11 +180,9 @@
     </div>
 
     <div id="appSection" class="hidden">
-        <!-- मोबाइल फ्रेंडली व्यवस्थित हेडर बार -->
         <div class="header-bar">
-            <!-- स्टॉक मेनू बाएं कोने में -->
             <div class="stock-btn-container">
-                <button onclick="toggleStockMenu()" class="stock-main-btn">📦 स्टॉक ▼</button>
+                <button onclick="toggleStockMenu()" class="stock-main-btn">📦 स्टॉक मेनू ▼</button>
                 <div id="stockDropdownMenu" class="stock-dropdown-content">
                     <button onclick="switchTab('stockTab')">📦 नया माल चढ़ाएं</button>
                     <button onclick="switchTab('masterTab')">➕ सिंगल प्रोडक्ट जोड़ें</button>
@@ -200,17 +194,13 @@
                 </div>
             </div>
 
-            <!-- दुकान का नाम बीच में -->
-            <div style="flex: 1; text-align: center; padding: 0 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                <h2 id="shopTitleHeader" style="margin: 0; color: var(--primary); font-size: 0.90rem;">🛒 किराना स्मार्ट सिस्टम</h2>
+            <div style="flex: 1; text-align: center; padding: 0 2px;">
+                <h2 id="shopTitleHeader" style="margin: 0; color: var(--primary); font-size: 0.95rem;">🛒 किराना स्मार्ट सिस्टम</h2>
             </div>
 
-            <!-- लॉग-आउट और थ्री-लाइन मेनू दाएं कोने में -->
             <div style="display: flex; gap: 4px; align-items: center;">
-                <button onclick="logout()" class="btn btn-danger" style="width: auto; padding: 8px 8px; font-size: 12px;" title="लॉग-आउट">🔒</button>
-                
                 <div class="menu-container">
-                    <button onclick="toggleMenu()" class="menu-btn">☰</button>
+                    <button onclick="toggleMenu()" class="menu-btn">☰ मेनू</button>
                     <div id="threeDotMenu" class="menu-content">
                         <button onclick="switchTab('billingTab')">🧾 बिलिंग काउंटर</button>
                         <button onclick="switchTab('customerMasterTab')">👥 कस्टमर डायरेक्टरी</button>
@@ -221,6 +211,7 @@
                         <button onclick="toggleMenu()" style="color: var(--danger); background: #fee2e2; font-weight: bold; text-align: center;">✕ मेनू बंद करें</button>
                     </div>
                 </div>
+                <button onclick="logout()" class="btn btn-danger" style="width: auto; padding: 8px 10px; font-size: 13px;" title="लॉग-आउट">🔒 लॉग-आउट</button>
             </div>
         </div>
 
@@ -447,13 +438,13 @@
             <div class="card">
                 <h3>📂 एक्सेल / CSV से प्रोडक्ट्स डंप करें</h3>
                 <p style="font-size:13px; color:#6b7280;">
-                    <b>क्रम नियम:</b> 1st: Barcode/Serial, 2nd: Name, 3rd: Purchase Price, 4th: Selling Price, 5th: Unit, 6th: Category
+                    <b>क्रम नियम:</b> 1st: Barcode/Serial, 2nd: Name, 3rd: Purchase Price, 4th: Selling Price, 5th: Unit, 6th: Category, 7th: Qty
                 </p>
                 <div style="margin-bottom: 12px;">
                     <label><b>📥 एक्सेल / CSV फाइल अपलोड करें:</b></label>
                     <input type="file" id="excelFile" accept=".csv, .txt" onchange="handleExcelFileUpload(event)">
                 </div>
-                <textarea id="bulkDataInput" rows="6" placeholder="SN001, आइटम नाम, 38, 42, Piece, कैटेगिरी"></textarea>
+                <textarea id="bulkDataInput" rows="6" placeholder="SN001, आइटम नाम, 38, 42, Piece, कैटेगिरी, 10"></textarea>
                 <button class="btn btn-primary" onclick="processBulkUpload()">मैनुअल डेटा इम्पोर्ट करें</button>
             </div>
         </div>
@@ -1288,7 +1279,7 @@
     }
 
     function deleteSaleRecord(idx) {
-        if(confirm("क्या आप इस बिक्री रिकॉर्ड को हटाना चाहते हैं? (इससे कस्टमर डायरेक्टरी और खरीद इतिहास में नाम लाल रंग का हो जाएगा)")) {
+        if(confirm("क्या आप इस बिक्री रिकॉर्ड को हटाना चाहते हैं?")) {
             salesHistory[idx].isDeleted = true;
             let phone = salesHistory[idx].customerPhone;
             let cObj = customerList.find(c => c.phone === phone);
@@ -1392,6 +1383,66 @@
         document.getElementById('shopTitleHeader').innerText = "🛒 " + shopSettings.shopName;
         document.getElementById('customBillNoteText').value = shopSettings.defaultBillNote;
         alert("सेटिंग्स सहेजी गईं!");
+    }
+
+    // ऑटो-डिटेक्ट एक्सेल / सीएसवी फाइल अपलोड फंक्शन (सभी फॉर्मेट्स सपोर्टेड)
+    function handleExcelFileUpload(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('bulkDataInput').value = e.target.result;
+        };
+        reader.readAsText(file);
+    }
+
+    // एडवांस्ड बल्क डंप फंक्शन जो किसी भी फॉर्मेट (Comma, Tab, Semicolon) को रीड कर लेगा
+    function processBulkUpload() {
+        let rawData = document.getElementById('bulkDataInput').value.trim();
+        if (!rawData) {
+            alert("कृपया डेटा दर्ज करें या फाइल अपलोड करें!");
+            return;
+        }
+        
+        let lines = rawData.split('\n');
+        let addedCount = 0;
+        
+        lines.forEach((line, index) => {
+            if (index === 0 && (line.toLowerCase().includes('barcode') || line.toLowerCase().includes('name') || line.toLowerCase().includes('आइटम'))) {
+                return;
+            }
+            if (!line.trim()) return;
+
+            let cols = line.split(/,|\t|;/).map(col => col.trim().replace(/^["']|["']$/g, ''));
+            
+            if (cols.length >= 2) {
+                let barcode = cols[0] || ('BC_' + Date.now() + Math.floor(Math.random()*1000));
+                let name = cols[1] || 'Unknown Product';
+                let costPrice = parseFloat(cols[2]) || 0;
+                let price = parseFloat(cols[3]) || 0;
+                let unit = cols[4] || 'Piece';
+                let category = cols[5] || (shopSettings.categories && shopSettings.categories[0]) || 'अन्य';
+                let qty = parseFloat(cols[6]) || 1;
+
+                productList.push({
+                    barcode: barcode,
+                    name: name,
+                    costPrice: costPrice,
+                    price: price,
+                    unit: unit,
+                    category: category,
+                    qty: qty
+                });
+                addedCount++;
+            }
+        });
+
+        localStorage.setItem('masterProductList', JSON.stringify(productList));
+        updateProductDropdowns();
+        alert(`सफलतापूर्वक ${addedCount} प्रोडक्ट्स डंप / इम्पोर्ट कर दिए गए!`);
+        
+        document.getElementById('bulkDataInput').value = "";
+        document.getElementById('excelFile').value = "";
     }
 
     function exportDataJSON() {
