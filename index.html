@@ -66,7 +66,7 @@
         .btn-primary { background-color: var(--primary); }
         .btn-secondary { background-color: #6b7280; }
         .btn-whatsapp { background-color: #25D366; color: #fff; }
-        .btn-sms { background-color: #0ea5e9; color: #fff; }
+        .btn-call { background-color: #0ea5e9; color: #fff; }
         .btn:disabled { background-color: #d1d5db !important; cursor: not-allowed; color: #9ca3af !important; }
         
         input, select, textarea { 
@@ -80,8 +80,8 @@
         }
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
         .table-responsive { width: 100%; overflow-x: auto; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; min-width: 600px; }
-        th, td { border: 1px solid #e5e7eb; padding: 8px 6px; text-align: center; font-size: 13px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; min-width: 400px; }
+        th, td { border: 1px solid #e5e7eb; padding: 10px 8px; text-align: center; font-size: 14px; }
         th { background-color: var(--primary); color: white; }
         .flex-row { display: flex; gap: 8px; flex-wrap: wrap; }
         .flex-row > * { flex: 1 1 100%; }
@@ -183,7 +183,6 @@
 
     <div id="appSection" class="hidden">
         <div class="header-bar">
-            <!-- बाईं ओर स्टॉक मेनू -->
             <div class="stock-btn-container">
                 <button onclick="toggleStockMenu()" class="stock-main-btn">📦 स्टॉक ▼</button>
                 <div id="stockDropdownMenu" class="stock-dropdown-content">
@@ -197,19 +196,18 @@
                 </div>
             </div>
 
-            <!-- बीच में दुकान का नाम -->
             <div style="flex: 1; text-align: center; overflow: hidden; padding: 0 4px;">
                 <h2 id="shopTitleHeader" style="margin: 0; color: var(--primary); font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🛒 किराना स्मार्ट सिस्टम</h2>
             </div>
 
-            <!-- दाहिनी ओर थ्री डॉट मेनू और लॉग-आउट बटन -->
             <div style="display: flex; gap: 4px; align-items: center;">
                 <div class="menu-container">
                     <button onclick="toggleMenu()" class="menu-btn">☰</button>
                     <div id="threeDotMenu" class="menu-content">
                         <button onclick="switchTab('billingTab')">🧾 बिलिंग काउंटर</button>
                         <button onclick="switchTab('customerMasterTab')">👥 कस्टमर डायरेक्टरी</button>
-                        <button onclick="switchTab('customerPurchaseHistoryTab')" style="color: var(--warning);">🛍️ ग्राहक खरीद इतिहास</button>
+                        <button onclick="switchTab('customerPurchaseHistoryTab')" style="color: var(--warning);">🛍️ ग्राहक खरीद इतिहास & एडिट</button>
+                        <button onclick="switchTab('productQtySumTab')" style="color: var(--success); font-weight: bold;">📊 कुल उत्पाद मात्रा गणना</button>
                         <button onclick="switchTab('sellingReportTab')" style="color: var(--primary);">📄 सेलिंग रिपोर्ट</button>
                         <button onclick="switchTab('settingsTab')">⚙️ सेटिंग्स & बैकअप</button>
                         <button onclick="switchTab('reportsTab')">📊 रिपोर्ट्स & लाभ</button>
@@ -227,11 +225,28 @@
                     <button class="btn btn-warning" style="width: auto; padding: 6px 12px; font-size: 13px;" onclick="refreshBillingCounter()">🔄 रिफ्रेश / नया बिल</button>
                 </div>
 
+                <div style="background: #f0fdf4; padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #bbf7d0;">
+                    <label style="font-size: 13px; color: var(--success); font-weight: bold;">🪙 खुला सामान / फुटकर राशि (क्लिक करें):</label>
+                    <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;">
+                        <button class="btn btn-success" style="flex: 1; padding: 8px; min-width: 50px;" onclick="addLooseItem(1)">₹1</button>
+                        <button class="btn btn-success" style="flex: 1; padding: 8px; min-width: 50px;" onclick="addLooseItem(2)">₹2</button>
+                        <button class="btn btn-success" style="flex: 1; padding: 8px; min-width: 50px;" onclick="addLooseItem(5)">₹5</button>
+                        <button class="btn btn-success" style="flex: 1; padding: 8px; min-width: 50px;" onclick="addLooseItem(10)">₹10</button>
+                        <button class="btn btn-success" style="flex: 1; padding: 8px; min-width: 50px;" onclick="addLooseItem(20)">₹20</button>
+                    </div>
+                </div>
+
                 <div style="background: #eef2ff; padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #c7d2fe;">
                     <label style="font-size: 13px; color: var(--primary); font-weight: bold;">👤 ग्राहक का विवरण:</label>
                     <div class="flex-row" style="margin-top: 5px;">
-                        <div><input type="text" id="custName" placeholder="ग्राहक का नाम..." style="margin:0;"></div>
-                        <div><input type="tel" id="custPhone" placeholder="मोबाइल नंबर..." style="margin:0;"></div>
+                        <div style="position: relative;">
+                            <input type="text" id="custName" placeholder="ग्राहक का नाम..." style="margin:0;" oninput="handleCustNameSearch()">
+                            <div id="custNameSuggestionsBox" class="suggestions-box hidden"></div>
+                        </div>
+                        <div style="position: relative;">
+                            <input type="tel" id="custPhone" placeholder="मोबाइल नंबर..." style="margin:0;" oninput="handleCustPhoneSearch()">
+                            <div id="custPhoneSuggestionsBox" class="suggestions-box hidden"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -304,7 +319,7 @@
                     <button class="btn btn-success" onclick="saveAndProcessBill('save')">💾 सेव करें</button>
                     <button class="btn btn-primary" onclick="saveAndProcessBill('print')">🖨️ सेव & प्रिंट</button>
                     <button class="btn btn-whatsapp" onclick="saveAndProcessBill('whatsapp')">🟢 WhatsApp बिल</button>
-                    <button class="btn btn-sms" onclick="saveAndProcessBill('sms')">💬 SMS भेजें</button>
+                    <button class="btn btn-warning" onclick="saveAndProcessBill('message')">💬 मैसेज पर भेजें</button>
                 </div>
             </div>
 
@@ -341,15 +356,20 @@
 
         <div id="customerMasterTab" class="tab-section">
             <div class="card">
-                <h3>👥 कस्टमर डायरेक्टरी (10 दिन बाद डिलीट योग्य)</h3>
-                <p style="font-size:12px; color:#6b7280;">सेलिंग रिपोर्ट से डिलीट होने पर यह यहाँ रेड (लाल) हो जाएगा।</p>
+                <h3>👥 कस्टमर डायरेक्टरी</h3>
                 <div class="flex-row" style="margin-bottom: 10px;">
-                    <input type="text" id="searchCustomerInput" placeholder="🔍 नाम या मोबाइल से खोजें..." onkeyup="renderCustomerDirectory()" style="margin:0; flex:2;">
-                    <button class="btn btn-primary" onclick="exportCustomerDirectoryToExcel()" style="margin:0; flex:1;">📥 एक्सेल डाउनलोड</button>
+                    <input type="text" id="searchCustomerInput" placeholder="🔍 नाम या मोबाइल से खोजें..." onkeyup="renderCustomerDirectory()" style="margin:0; width:100%;">
                 </div>
                 <div class="table-responsive">
                     <table>
-                        <thead><tr><th>नाम</th><th>मोबाइल नंबर</th><th>कुल खरीदारी (₹)</th><th>पंजीकरण तिथि</th><th>एक्शन (डिलीट / WhatsApp)</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>नाम</th>
+                                <th>मोबाइल नंबर</th>
+                                <th>WhatsApp</th>
+                                <th>कॉल (Call)</th>
+                            </tr>
+                        </thead>
                         <tbody id="customerTableBody"></tbody>
                     </table>
                 </div>
@@ -358,8 +378,8 @@
 
         <div id="customerPurchaseHistoryTab" class="tab-section">
             <div class="card">
-                <h3>🛍️ ग्राहक खरीद इतिहास (10 दिन बाद डिलीट योग्य)</h3>
-                <p style="font-size:12px; color:#6b7280;">सेलिंग रिपोर्ट से डिलीट होने पर यह यहाँ रेड (लाल) हो जाएगा, पर डिलीट नहीं होगा।</p>
+                <h3>🛍️ ग्राहक खरीद इतिहास & बिल एडिट</h3>
+                <p style="font-size:12px; color:#6b7280;">यहाँ से आप किसी भी ग्राहक के पुराने बिल देख सकते हैं। यदि सेलिंग रिपोर्ट से कोई बिल डिलीट किया गया है, तो वह यहाँ लाल रंग में दिखेगा और आप चाहें तो यहाँ से भी उसे डिलीट कर सकते हैं।</p>
                 <div class="flex-row" style="margin-bottom: 10px;">
                     <input type="text" id="searchCustHistoryInput" placeholder="🔍 ग्राहक का नाम या मोबाइल नंबर से खोजें..." onkeyup="renderCustomerPurchaseHistory()" style="margin:0; flex:2;">
                     <button class="btn btn-primary" onclick="exportCustomerPurchaseHistoryToExcel()" style="margin:0; flex:1;">📥 एक्सेल डाउनलोड</button>
@@ -373,7 +393,7 @@
                                 <th>मोबाइल नंबर</th>
                                 <th>खरीदे गए सामान विवरण</th>
                                 <th>कुल राशि (₹)</th>
-                                <th>एक्शन (डिलीट / WhatsApp)</th>
+                                <th>एक्शन (Edit / Delete / WhatsApp / SMS)</th>
                             </tr>
                         </thead>
                         <tbody id="customerPurchaseHistoryTableBody"></tbody>
@@ -382,10 +402,41 @@
             </div>
         </div>
 
+        <div id="productQtySumTab" class="tab-section">
+            <div class="card">
+                <h3>📊 सभी उत्पादों की कुल मात्रा और मूल्य गणना</h3>
+                <p style="font-size:12px; color:#6b7280;">यहाँ केवल वैध (सेलिंग रिपोर्ट में मौजूद) बिके हुए उत्पादों की कुल मात्रा और मूल्य दिखाई देते हैं।</p>
+                
+                <div style="background:#eef2ff; padding:12px; border-radius:8px; text-align:right; margin-bottom:10px; border:1px solid #c7d2fe;">
+                    <h4 style="margin:0; color:var(--primary);">समग्र कुल योग: ₹<span id="sumTotalGrandPrice">0</span></h4>
+                </div>
+
+                <div class="flex-row" style="margin-bottom: 10px;">
+                    <input type="text" id="searchProductSumInput" placeholder="🔍 उत्पाद का नाम खोजें..." onkeyup="renderProductQtySumTable()" style="margin:0; flex:2;">
+                    <button class="btn btn-primary" onclick="exportProductQtySumToExcel()" style="margin:0; flex:1;">📥 एक्सेल डाउनलोड</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>उत्पाद का नाम</th>
+                                <th>कुल मात्रा (Total Qty)</th>
+                                <th>इकाई (Unit)</th>
+                                <th>कुल मूल्य (Total Price ₹)</th>
+                                <th>एक्शन (डिलीट)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productQtySumTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <div id="sellingReportTab" class="tab-section">
             <div class="card">
                 <h3>📄 सेलिंग रिपोर्ट (बिक्री इतिहास & डिलीट ऑप्शन)</h3>
-                <p style="font-size:12px; color:#6b7280;">यहाँ से डिलीट करने पर यह रिकॉर्ड खरीद इतिहास और कस्टमर डायरेक्टरी में रेड (लाल) हो जाएगा (लेकिन डिलीट नहीं होगा)।</p>
+                <p style="font-size:12px; color:#6b7280;">यहाँ से रिपोर्ट डिलीट करने पर बिके हुए प्रोडक्ट्स वापस स्टॉक में जुड़ जाएंगे।</p>
                 <div class="flex-row" style="margin-bottom: 10px; align-items: center;">
                     <div>
                         <label style="font-size:12px;"><b>प्रारंभ तिथि (From):</b></label>
@@ -402,7 +453,7 @@
                 </div>
                 <div class="table-responsive">
                     <table>
-                        <thead><tr><th>दिनांक/समय</th><th>ग्राहक</th><th>मोबाइल</th><th>कुल राशि (₹)</th><th>एक्शन</th></tr></thead>
+                        <thead><tr><th>दिनांक/समय</th><th>ग्राहक</th><th>मोबाइल</th><th>कुल राशि (₹)</th><th>एक्शन (डिलीट)</th></tr></thead>
                         <tbody id="salesReportTableBody"></tbody>
                     </table>
                 </div>
@@ -548,7 +599,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>बारकोड/सीरियल</th>
+                                <th>बारकोड / यूनिक आईडी</th>
                                 <th>नाम</th>
                                 <th>खरीद मूल्य</th>
                                 <th>बिक्री मूल्य</th>
@@ -583,13 +634,12 @@
                 <button class="btn btn-primary" style="margin-top: 10px;" onclick="saveSettingsData()">सेटिंग्स सेव करें</button>
 
                 <hr style="margin: 20px 0;">
-                <h4>🗂️ कैटेगरीज मैनेजमेंट</h4>
+                <h4>🗂️ कैटेगरीज मैनेजमेंट (देखें, जोड़ें व डिलीट करें)</h4>
                 <div class="flex-row">
                     <input type="text" id="newCategoryInput" placeholder="नई कैटेगरी का नाम..." style="margin:0; flex:2;">
                     <button class="btn btn-success" onclick="addNewCategory()" style="margin:0; flex:1;">➕ कैटेगरी जोड़ें</button>
                 </div>
-                <button class="btn btn-primary" style="margin-top: 10px;" onclick="exportCategoryProductsToExcel()">📥 इस कैटेगरी का एक्सेल डाउनलोड करें</button>
-                <div id="categoryTagsContainer" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px;"></div>
+                <div id="categoryTagsContainer" style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;"></div>
 
                 <hr style="margin: 20px 0;">
                 <h4>📥 बैकअप डाउनलोड & 📤 अपलोड (Restore)</h4>
@@ -612,7 +662,7 @@
                 <button class="btn btn-primary" style="margin-bottom: 10px;" onclick="exportProfitReportToExcel()">📥 एक्सेल डाउनलोड</button>
                 <div class="table-responsive">
                     <table>
-                        <thead><tr><th>बेचा गया सामान</th><th>मात्रा</th><th>कुल बिक्री</th><th>शुद्ध लाभ</th></tr></thead>
+                        <thead><tr><th>बेचा गया सामान</th><th>मात्रा</th><th>कुल बिक्री</th><th>शुद्ध लाभ</th><th>एक्शन (डिलीट)</th></tr></thead>
                         <tbody id="profitReportTableBody"></tbody>
                     </table>
                 </div>
@@ -628,7 +678,6 @@
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdM0NyhPBd1b-QyrAgNUT-3h9nAVYLdXqWNb8ywqT6QSz3z0dLJ7GKLGG7t9kfb-lbqg/exec";
-
     let deviceId = localStorage.getItem('deviceId') || ('DEV_' + Math.random().toString(36).substr(2, 9));
     localStorage.setItem('deviceId', deviceId);
 
@@ -641,7 +690,10 @@
 
     let productList = JSON.parse(localStorage.getItem('masterProductList')) || [];
     let salesHistory = JSON.parse(localStorage.getItem('salesHistoryList')) || [];
-    let customerList = JSON.parse(localStorage.getItem('customerMasterList')) || [];
+    let customerMasterList = JSON.parse(localStorage.getItem('customerMasterList')) || [];
+    let customerPurchaseHistory = JSON.parse(localStorage.getItem('customerPurchaseHistoryList')) || [];
+    let currentBillItems = [];
+    let editingSaleIndex = null;
 
     window.onload = function() {
         if(localStorage.getItem('isLoggedIn') === 'true') {
@@ -757,6 +809,7 @@
         if(tabId === 'quickRateEditTab') renderQuickRateTable();
         if(tabId === 'customerMasterTab') renderCustomerDirectory();
         if(tabId === 'customerPurchaseHistoryTab') renderCustomerPurchaseHistory();
+        if(tabId === 'productQtySumTab') renderProductQtySumTable();
         if(tabId === 'sellingReportTab') renderSellingReport();
         if(tabId === 'shortStockTab') renderShortStockTable();
         if(tabId === 'reportsTab') renderProfitReport();
@@ -780,245 +833,124 @@
     function updateProductDropdowns() {
         const billSelect = document.getElementById('billProductSelect');
         const stockSelect = document.getElementById('stockInProductSelect');
+        const selectedCategory = document.getElementById('billCategorySelect') ? document.getElementById('billCategorySelect').value : 'ALL';
+
         if(billSelect) {
             billSelect.innerHTML = '<option value="">-- सामान चुनें --</option>';
             productList.forEach((item, index) => {
-                billSelect.innerHTML += `<option value="${index}">${item.name} (सीरियल/बारकोड: ${item.barcode || 'N/A'} | स्टॉक: ${item.qty} | ₹${item.price})</option>`;
+                if(selectedCategory === 'ALL' || item.category === selectedCategory) {
+                    billSelect.innerHTML += `<option value="${index}">${item.name} (स्टॉक: ${item.qty} | ₹${item.price})</option>`;
+                }
             });
         }
         if(stockSelect) {
             stockSelect.innerHTML = '<option value="">-- सामान चुनें --</option>';
             productList.forEach((item, index) => {
-                stockSelect.innerHTML += `<option value="${index}">${item.name} (बारकोड: ${item.barcode || 'N/A'} | स्टॉक: ${item.qty})</option>`;
+                stockSelect.innerHTML += `<option value="${index}">${item.name} (स्टॉक: ${item.qty})</option>`;
             });
         }
-    }
-
-    function handleStockBarcodeSearch() {
-        let val = document.getElementById('stockInBarcodeSearch').value.trim().toLowerCase();
-        if(!val) return;
-        let foundIdx = productList.findIndex(p => p.barcode && p.barcode.toLowerCase() === val);
-        if(foundIdx !== -1) {
-            document.getElementById('stockInProductSelect').value = foundIdx;
-            fillStockInDetailsFromDropdown();
-        }
-    }
-
-    function handleStockNameSearch() {
-        let keyword = document.getElementById('stockInNameSearch').value.trim().toLowerCase();
-        let box = document.getElementById('stockNameSuggestionsBox');
-        if(!keyword) {
-            box.classList.add('hidden');
-            return;
-        }
-        let matches = productList.map((p, idx) => ({...p, index: idx})).filter(p => p.name.toLowerCase().includes(keyword));
-        if(matches.length > 0) {
-            box.innerHTML = '';
-            matches.forEach(m => {
-                box.innerHTML += `<div class="suggestion-item" onclick="selectStockProductFromSuggestion(${m.index}, '${m.name.replace(/'/g, "\\'")}')">${m.name} (बारकोड: ${m.barcode || 'N/A'} | स्टॉक: ${m.qty})</div>`;
-            });
-            box.classList.remove('hidden');
-        } else {
-            box.innerHTML = '<div class="suggestion-item" style="color:var(--danger)">कोई प्रोडक्ट नहीं मिला</div>';
-            box.classList.remove('hidden');
-        }
-    }
-
-    function selectStockProductFromSuggestion(index, name) {
-        document.getElementById('stockInNameSearch').value = name;
-        document.getElementById('stockNameSuggestionsBox').classList.add('hidden');
-        document.getElementById('stockInProductSelect').value = index;
-        fillStockInDetailsFromDropdown();
-    }
-
-    function fillStockInDetailsFromDropdown() {
-        let idx = document.getElementById('stockInProductSelect').value;
-        if(idx === "") {
-            document.getElementById('stockInUnitDisplay').value = "";
-            document.getElementById('stockInCurrentQtyDisplay').value = "";
-            document.getElementById('stockInBarcodeSearch').value = "";
-            return;
-        }
-        let prod = productList[idx];
-        document.getElementById('stockInUnitDisplay').value = prod.unit || "Piece";
-        document.getElementById('stockInCurrentQtyDisplay').value = prod.qty || 0;
-        if(prod.barcode) {
-            document.getElementById('stockInBarcodeSearch').value = prod.barcode;
-        }
-    }
-
-    function addStockQuantity() {
-        let idx = document.getElementById('stockInProductSelect').value;
-        if(idx === "") {
-            alert("कृपया पहले प्रोडक्ट चुनें या बारकोड/नाम से खोजें!");
-            return;
-        }
-        let addQty = parseFloat(document.getElementById('stockInQty').value);
-        if(isNaN(addQty) || addQty <= 0) {
-            alert("कृपया वैध मात्रा (Quantity) दर्ज करें!");
-            return;
-        }
-
-        productList[idx].qty = (parseFloat(productList[idx].qty) || 0) + addQty;
-        localStorage.setItem('masterProductList', JSON.stringify(productList));
-        
-        alert(`सफलतापूर्वक ${addQty} ${productList[idx].unit || 'Piece'} स्टॉक जोड़ दिया गया!\nनया कुल स्टॉक: ${productList[idx].qty}`);
-        
-        document.getElementById('stockInQty').value = "1";
-        document.getElementById('stockInBarcodeSearch').value = "";
-        document.getElementById('stockInNameSearch').value = "";
-        document.getElementById('stockInProductSelect').value = "";
-        document.getElementById('stockInUnitDisplay').value = "";
-        document.getElementById('stockInCurrentQtyDisplay').value = "";
-        updateProductDropdowns();
-    }
-
-    function handleBarcodeSearchInput() {
-        let code = document.getElementById('barcodeScanInput').value.trim().toLowerCase();
-        if(!code) return;
-        let idx = productList.findIndex(p => p.barcode && p.barcode.toLowerCase() === code);
-        if(idx !== -1) {
-            document.getElementById('billProductSelect').value = idx;
-            fillBillDetails();
-        }
-    }
-
-    function handleBarcodeSearchKey(e) {
-        if(e.key === 'Enter') {
-            handleBarcodeSearchInput();
-        }
-    }
-
-    function handleNameSearchInput() {
-        let text = document.getElementById('nameSearchInput').value.trim().toLowerCase();
-        let box = document.getElementById('nameSuggestionsBox');
-        if(!text) {
-            box.classList.add('hidden');
-            return;
-        }
-        let filtered = productList.map((p, idx) => ({...p, index: idx})).filter(p => p.name.toLowerCase().includes(text));
-        if(filtered.length > 0) {
-            box.innerHTML = '';
-            filtered.forEach(item => {
-                box.innerHTML += `<div class="suggestion-item" onclick="selectProductFromSuggestion(${item.index}, '${item.name.replace(/'/g, "\\'")}')">${item.name} (स्टॉक: ${item.qty} ${item.unit} | ₹${item.price})</div>`;
-            });
-            box.classList.remove('hidden');
-        } else {
-            box.innerHTML = '<div class="suggestion-item" style="color:var(--danger)">कोई सामान नहीं मिला</div>';
-            box.classList.remove('hidden');
-        }
-    }
-
-    function selectProductFromSuggestion(index, name) {
-        document.getElementById('nameSearchInput').value = name;
-        document.getElementById('nameSuggestionsBox').classList.add('hidden');
-        document.getElementById('billProductSelect').value = index;
-        fillBillDetails();
-    }
-
-    function fillBillDetails() {
-        let idx = document.getElementById('billProductSelect').value;
-        if(idx === "") return;
-        let prod = productList[idx];
-        document.getElementById('billPrice').value = prod.price || 0;
-        document.getElementById('billQty').value = 1;
-        if(prod.unit) document.getElementById('billUnit').value = prod.unit;
     }
 
     function filterProductsByCategory() {
-        let cat = document.getElementById('billCategorySelect').value;
-        let billSelect = document.getElementById('billProductSelect');
-        billSelect.innerHTML = '<option value="">-- सामान चुनें --</option>';
-        productList.forEach((item, index) => {
-            if(cat === 'ALL' || item.category === cat) {
-                billSelect.innerHTML += `<option value="${index}">${item.name} (स्टॉक: ${item.qty} | ₹${item.price})</option>`;
-            }
+        updateProductDropdowns();
+    }
+
+    function addLooseItem(amount) {
+        currentBillItems.push({
+            name: "खुला सामान",
+            qty: 1,
+            unit: "Piece",
+            price: amount,
+            total: amount,
+            productIndex: null
         });
+        renderBillTable();
+    }
+
+    function fillBillDetails() {
+        const index = document.getElementById('billProductSelect').value;
+        if(index === "") return;
+        const prod = productList[index];
+        document.getElementById('billPrice').value = prod.price;
+        document.getElementById('billQty').value = 1;
+        document.getElementById('billUnit').value = prod.unit || "Piece";
     }
 
     function adjustBillQty(val) {
-        let qInput = document.getElementById('billQty');
-        let current = parseFloat(qInput.value) || 0;
+        let qtyInput = document.getElementById('billQty');
+        let current = parseFloat(qtyInput.value) || 0;
         let res = current + val;
         if(res < 0.001) res = 0.001;
-        qInput.value = res;
+        qtyInput.value = res;
     }
 
-    let currentBillItems = [];
-
     function addToBill() {
-        let idx = document.getElementById('billProductSelect').value;
-        if(idx === "") {
-            alert("कृपया कोई सामान चुनें!");
-            return;
-        }
-        let qty = parseFloat(document.getElementById('billQty').value);
-        let price = parseFloat(document.getElementById('billPrice').value);
-        let unit = document.getElementById('billUnit').value;
+        const index = document.getElementById('billProductSelect').value;
+        const qty = parseFloat(document.getElementById('billQty').value);
+        const price = parseFloat(document.getElementById('billPrice').value);
+        const unit = document.getElementById('billUnit').value;
 
-        if(isNaN(qty) || qty <= 0 || isNaN(price) || price < 0) {
-            alert("कृपया सही मात्रा और मूल्य भरें!");
+        if(index === "" || isNaN(qty) || isNaN(price)) {
+            alert("कृपया सही सामान और मूल्य चुनें!");
             return;
         }
 
-        let prod = productList[idx];
-        if(prod.qty < qty) {
-            if(!confirm(`चेतावनी: स्टॉक में केवल ${prod.qty} ${prod.unit} उपलब्ध है। क्या फिर भी बिल में जोड़ना चाहते हैं?`)) {
-                return;
-            }
-        }
+        const prod = productList[index];
+        let total = qty * price;
 
         currentBillItems.push({
-            productIndex: idx,
             name: prod.name,
             qty: qty,
             unit: unit,
             price: price,
-            total: qty * price,
-            costPrice: prod.costPrice || 0
+            total: total,
+            productIndex: parseInt(index)
         });
 
-        renderCurrentBillTable();
-        document.getElementById('barcodeScanInput').value = "";
-        document.getElementById('nameSearchInput').value = "";
+        renderBillTable();
         document.getElementById('billProductSelect').value = "";
-        document.getElementById('billQty').value = "1";
+        document.getElementById('billQty').value = 1;
         document.getElementById('billPrice').value = "";
+        document.getElementById('nameSearchInput').value = "";
+        document.getElementById('barcodeScanInput').value = "";
     }
 
-    function renderCurrentBillTable() {
-        let tbody = document.getElementById('billTableBody');
-        tbody.innerHTML = '';
+    function renderBillTable() {
+        const tbody = document.getElementById('billTableBody');
+        tbody.innerHTML = "";
         let grandTotal = 0;
+
         currentBillItems.forEach((item, index) => {
             grandTotal += item.total;
             tbody.innerHTML += `
                 <tr>
-                    <td>${item.name} (${item.qty} ${item.unit})</td>
-                    <td>${item.qty}</td>
+                    <td style="text-align:left;">${item.name}</td>
+                    <td>${item.qty} ${item.unit}</td>
                     <td>₹${item.price}</td>
-                    <td>₹${item.total.toFixed(2)}</td>
-                    <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="removeBillItem(${index})">✕</button></td>
+                    <td><b>₹${item.total.toFixed(2)}</b></td>
+                    <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="removeBillItem(${index})">❌</button></td>
                 </tr>
             `;
         });
+
         document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
     }
 
     function removeBillItem(index) {
         currentBillItems.splice(index, 1);
-        renderCurrentBillTable();
+        renderBillTable();
     }
 
     function refreshBillingCounter() {
         currentBillItems = [];
-        renderCurrentBillTable();
+        editingSaleIndex = null;
         document.getElementById('custName').value = "";
         document.getElementById('custPhone').value = "";
         document.getElementById('barcodeScanInput').value = "";
         document.getElementById('nameSearchInput').value = "";
-        document.getElementById('billProductSelect').value = "";
-        document.getElementById('printableBillArea').classList.add('hidden');
+        document.getElementById('billPrice').value = "";
+        document.getElementById('billQty').value = 1;
+        renderBillTable();
     }
 
     function saveAndProcessBill(actionType) {
@@ -1026,148 +958,389 @@
             alert("बिल में कोई सामान नहीं है!");
             return;
         }
-        let cName = document.getElementById('custName').value.trim() || "नकद ग्राहक";
-        let cPhone = document.getElementById('custPhone').value.trim() || "N/A";
-        let grandTotal = currentBillItems.reduce((acc, item) => acc + item.total, 0);
-        let nowStr = new Date().toLocaleString();
+
+        const custName = document.getElementById('custName').value.trim() || "सामान्य ग्राहक";
+        const custPhone = document.getElementById('custPhone').value.trim() || "N/A";
+        let grandTotal = currentBillItems.reduce((sum, item) => sum + item.total, 0);
+        const billNote = document.getElementById('customBillNoteText').value;
+
+        if(editingSaleIndex !== null) {
+            let oldSale = salesHistory[editingSaleIndex];
+            oldSale.items.forEach(it => {
+                if(it.productIndex !== null && productList[it.productIndex]) {
+                    productList[it.productIndex].qty += it.qty;
+                }
+            });
+            salesHistory.splice(editingSaleIndex, 1);
+            editingSaleIndex = null;
+        }
 
         currentBillItems.forEach(item => {
-            let p = productList[item.productIndex];
-            if(p) {
-                p.qty = Math.max(0, parseFloat(p.qty) - item.qty);
+            if(item.productIndex !== null && productList[item.productIndex]) {
+                productList[item.productIndex].qty -= item.qty;
+                if(productList[item.productIndex].qty < 0) productList[item.productIndex].qty = 0;
             }
         });
-        localStorage.setItem('masterProductList', JSON.stringify(productList));
 
         let saleRecord = {
-            id: 'SALE_' + Date.now(),
-            date: nowStr,
-            customerName: cName,
-            customerPhone: cPhone,
+            id: 'SALE_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+            date: new Date().toLocaleString(),
+            custName: custName,
+            custPhone: custPhone,
             items: [...currentBillItems],
-            grandTotal: grandTotal,
-            isDeleted: false
+            total: grandTotal,
+            note: billNote
         };
-        salesHistory.unshift(saleRecord);
-        localStorage.setItem('salesHistoryList', JSON.stringify(salesHistory));
 
-        if(cPhone !== "N/A") {
-            let custIdx = customerList.findIndex(c => c.phone === cPhone);
-            if(custIdx !== -1) {
-                customerList[custIdx].totalSpent += grandTotal;
-                customerList[custIdx].name = cName;
-            } else {
-                customerList.push({
-                    name: cName,
-                    phone: cPhone,
-                    totalSpent: grandTotal,
-                    regDate: new Date().toLocaleDateString(),
-                    isDeleted: false
-                });
+        salesHistory.unshift(saleRecord);
+        customerPurchaseHistory.unshift(saleRecord);
+
+        localStorage.setItem('masterProductList', JSON.stringify(productList));
+        localStorage.setItem('salesHistoryList', JSON.stringify(salesHistory));
+        localStorage.setItem('customerPurchaseHistoryList', JSON.stringify(customerPurchaseHistory));
+
+        if(custPhone !== "N/A") {
+            let existingCust = customerMasterList.find(c => c.phone === custPhone);
+            if(!existingCust) {
+                customerMasterList.push({ name: custName, phone: custPhone });
+                localStorage.setItem('customerMasterList', JSON.stringify(customerMasterList));
             }
-            localStorage.setItem('customerMasterList', JSON.stringify(customerList));
         }
 
         if(actionType === 'print') {
-            prepareReceiptHTML(cName, cPhone, nowStr, grandTotal);
-            applyPageSizeStyles();
+            document.getElementById('receiptShopName').innerText = shopSettings.shopName;
+            document.getElementById('receiptDate').innerText = saleRecord.date;
+            document.getElementById('receiptCustName').innerText = custName;
+            document.getElementById('receiptCustPhone').innerText = custPhone;
+            document.getElementById('receiptGrandTotal').innerText = grandTotal.toFixed(2);
+            document.getElementById('receiptCustomNote').innerText = billNote;
+
+            let rBody = document.getElementById('receiptItemsBody');
+            rBody.innerHTML = "";
+            currentBillItems.forEach(it => {
+                rBody.innerHTML += `<tr><td style="padding:4px;">${it.name}</td><td style="text-align:center; padding:4px;">${it.qty} ${it.unit}</td><td style="text-align:right; padding:4px;">${it.total.toFixed(2)}</td></tr>`;
+            });
             window.print();
         } else if(actionType === 'whatsapp') {
-            let msg = `🛒 *${shopSettings.shopName}* \nदिनांक: ${nowStr}\nग्राहक: ${cName}\n--------------------\n`;
-            currentBillItems.forEach(i => {
-                msg += `${i.name} - ${i.qty} ${i.unit} x ₹${i.price} = ₹${i.total}\n`;
+            let msg = `🛍️ *${shopSettings.shopName}* 🛍️\nदिनांक: ${saleRecord.date}\nग्राहक: ${custName}\n--------------------------\n`;
+            currentBillItems.forEach(it => {
+                msg += `${it.name} - ${it.qty} ${it.unit} x ₹${it.price} = ₹${it.total.toFixed(2)}\n`;
             });
-            msg += `--------------------\n*कुल योग: ₹${grandTotal.toFixed(2)}*\n${document.getElementById('customBillNoteText').value}`;
-            window.open(`https://api.whatsapp.com/send?phone=${cPhone !== "N/A" ? cPhone : ''}&text=${encodeURIComponent(msg)}`, '_blank');
-        } else {
-            alert("बिल सफलतापूर्वक सेव हो गया!");
+            msg += `--------------------------\n*कुल योग: ₹${grandTotal.toFixed(2)}*\n${billNote}`;
+            let waUrl = `https://api.whatsapp.com/send?phone=${custPhone !== 'N/A' ? custPhone : ''}&text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, '_blank');
+        } else if(actionType === 'message') {
+            let msg = `🛍️ ${shopSettings.shopName} 🛍️\nदिनांक: ${saleRecord.date}\nग्राहक: ${custName}\n--------------------------\n`;
+            currentBillItems.forEach(it => {
+                msg += `${it.name} - ${it.qty} ${it.unit} x ₹${it.price} = ₹${it.total.toFixed(2)}\n`;
+            });
+            msg += `--------------------------\nकुल योग: ₹${grandTotal.toFixed(2)}\n${billNote}`;
+            let smsUrl = `sms:${custPhone !== 'N/A' ? custPhone : ''}?body=${encodeURIComponent(msg)}`;
+            window.open(smsUrl, '_blank');
         }
+
+        alert("बिल सफलतापूर्वक सहेज लिया गया!");
         refreshBillingCounter();
         updateProductDropdowns();
     }
 
-    function prepareReceiptHTML(cName, cPhone, dateStr, total) {
-        document.getElementById('receiptShopName').innerText = shopSettings.shopName;
-        document.getElementById('receiptDate').innerText = dateStr;
-        document.getElementById('receiptCustName').innerText = cName;
-        document.getElementById('receiptCustPhone').innerText = cPhone;
-        document.getElementById('receiptGrandTotal').innerText = total.toFixed(2);
-        document.getElementById('receiptCustomNote').innerText = document.getElementById('customBillNoteText').value;
+    function renderProductQtySumTable() {
+        const tbody = document.getElementById('productQtySumTableBody');
+        const searchVal = document.getElementById('searchProductSumInput').value.toLowerCase();
+        tbody.innerHTML = "";
 
-        let tbody = document.getElementById('receiptItemsBody');
-        tbody.innerHTML = '';
-        currentBillItems.forEach(i => {
-            tbody.innerHTML += `
-                <tr>
-                    <td style="padding:3px; text-align:left;">${i.name}</td>
-                    <td style="padding:3px; text-align:center;">${i.qty} ${i.unit}</td>
-                    <td style="padding:3px; text-align:right;">${i.total.toFixed(2)}</td>
-                </tr>
-            `;
+        let summaryMap = {};
+        let grandSumPrice = 0;
+
+        salesHistory.forEach((sale, saleIndex) => {
+            sale.items.forEach((item, itemIndex) => {
+                let key = item.name.trim().toLowerCase();
+                if(!summaryMap[key]) {
+                    summaryMap[key] = {
+                        name: item.name,
+                        totalQty: 0,
+                        unit: item.unit || "Piece",
+                        totalPrice: 0,
+                        refs: []
+                    };
+                }
+                summaryMap[key].totalQty += parseFloat(item.qty) || 0;
+                summaryMap[key].totalPrice += parseFloat(item.total) || 0;
+                summaryMap[key].refs.push({ saleIndex, itemIndex });
+            });
         });
-        document.getElementById('printableBillArea').classList.remove('hidden');
+
+        let summaryKeys = Object.keys(summaryMap);
+        summaryKeys.forEach(key => {
+            let item = summaryMap[key];
+            if(item.name.toLowerCase().includes(searchVal)) {
+                grandSumPrice += item.totalPrice;
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="text-align:left; font-weight:bold;">${item.name}</td>
+                        <td style="color:var(--primary); font-weight:bold;">${item.totalQty.toFixed(3)}</td>
+                        <td>${item.unit}</td>
+                        <td><b>₹${item.totalPrice.toFixed(2)}</b></td>
+                        <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteProductSumItem('${key}')">🗑️ डिलीट</button></td>
+                    </tr>
+                `;
+            }
+        });
+
+        document.getElementById('sumTotalGrandPrice').innerText = grandSumPrice.toFixed(2);
     }
 
-    function applyPageSizeStyles() {
-        let size = shopSettings.pageSize || "thermal80";
-        let area = document.getElementById('printableBillArea');
-        area.style.width = "100%";
-        if(size === "thermal58") {
-            area.style.maxWidth = "58mm";
-            area.style.fontSize = "11px";
-        } else if(size === "thermal80") {
-            area.style.maxWidth = "80mm";
-            area.style.fontSize = "12px";
-        } else if(size === "A5") {
-            area.style.maxWidth = "148mm";
-            area.style.fontSize = "14px";
-        } else {
-            area.style.maxWidth = "210mm";
-            area.style.fontSize = "15px";
+    function deleteProductSumItem(productKey) {
+        if(confirm(`क्या आप इस उत्पाद के सभी बिक्री रिकॉर्ड्स हटाना चाहते हैं?`)) {
+            salesHistory.forEach(sale => {
+                sale.items = sale.items.filter(item => item.name.trim().toLowerCase() !== productKey);
+            });
+            salesHistory = salesHistory.filter(sale => sale.items.length > 0);
+            
+            localStorage.setItem('salesHistoryList', JSON.stringify(salesHistory));
+            renderProductQtySumTable();
+            renderSellingReport();
+            alert("उत्पाद का डेटा हटा दिया गया है!");
         }
     }
 
-    function renderInventoryTable() {
-        let tbody = document.getElementById('inventoryTableBody');
-        tbody.innerHTML = '';
-        let keyword = document.getElementById('inventorySearchInput').value.trim().toLowerCase();
-        productList.forEach((item, idx) => {
-            if(keyword && !item.name.toLowerCase().includes(keyword) && !(item.barcode && item.barcode.toLowerCase().includes(keyword))) return;
-            tbody.innerHTML += `
-                <tr>
-                    <td><input type="text" id="inv_barcode_${idx}" value="${item.barcode || ''}" style="margin:0; padding:4px;"></td>
-                    <td><input type="text" id="inv_name_${idx}" value="${item.name}" style="margin:0; padding:4px;"></td>
-                    <td><input type="number" id="inv_cost_${idx}" value="${item.costPrice || 0}" style="margin:0; padding:4px;"></td>
-                    <td><input type="number" id="inv_price_${idx}" value="${item.price || 0}" style="margin:0; padding:4px;"></td>
-                    <td><input type="number" id="inv_qty_${idx}" value="${item.qty}" step="0.001" style="margin:0; padding:4px;"></td>
-                    <td>${item.unit}</td>
-                    <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteSingleProduct(${idx})">🗑️</button></td>
-                </tr>
+    function exportProductQtySumToExcel() {
+        let csv = "उत्पाद का नाम,कुल मात्रा,इकाई,कुल मूल्य (Rs)\n";
+        let summaryMap = {};
+        salesHistory.forEach(sale => {
+            sale.items.forEach(item => {
+                let key = item.name.trim().toLowerCase();
+                if(!summaryMap[key]) {
+                    summaryMap[key] = { name: item.name, totalQty: 0, unit: item.unit || "Piece", totalPrice: 0 };
+                }
+                summaryMap[key].totalQty += parseFloat(item.qty) || 0;
+                summaryMap[key].totalPrice += parseFloat(item.total) || 0;
+            });
+        });
+        Object.values(summaryMap).forEach(item => {
+            csv += `"${item.name}",${item.totalQty.toFixed(3)},"${item.unit}",${item.totalPrice.toFixed(2)}\n`;
+        });
+        let blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Product_Quantity_Summary.csv";
+        link.click();
+    }
+
+    function renderCategoryManager() {
+        const container = document.getElementById('categoryTagsContainer');
+        if(!container) return;
+        container.innerHTML = "";
+
+        shopSettings.categories.forEach((cat, index) => {
+            container.innerHTML += `
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #f3f4f6; padding: 8px 12px; border-radius: 6px; border: 1px solid #e5e7eb;">
+                    <span style="font-weight: 600; color: var(--text-main);">${cat}</span>
+                    <button class="btn btn-danger" style="width: auto; padding: 4px 10px; font-size: 12px;" onclick="deleteCategory(${index})">🗑️ डिलीट करें</button>
+                </div>
             `;
         });
     }
 
-    function saveAllInventoryChanges() {
-        productList.forEach((item, idx) => {
-            let b = document.getElementById(`inv_barcode_${idx}`);
-            let n = document.getElementById(`inv_name_${idx}`);
-            let c = document.getElementById(`inv_cost_${idx}`);
-            let p = document.getElementById(`inv_price_${idx}`);
-            let q = document.getElementById(`inv_qty_${idx}`);
-            if(b) item.barcode = b.value.trim();
-            if(n) item.name = n.value.trim();
-            if(c) item.costPrice = parseFloat(c.value) || 0;
-            if(p) item.price = parseFloat(p.value) || 0;
-            if(q) item.qty = parseFloat(q.value) || 0;
-        });
+    function addNewCategory() {
+        const input = document.getElementById('newCategoryInput');
+        const catName = input.value.trim();
+        if(!catName) {
+            alert("कृपया कैटेगरी का नाम दर्ज करें!");
+            return;
+        }
+        if(shopSettings.categories.includes(catName)) {
+            alert("यह कैटेगरी पहले से मौजूद है!");
+            return;
+        }
+        shopSettings.categories.push(catName);
+        localStorage.setItem('shopSettings', JSON.stringify(shopSettings));
+        input.value = "";
+        renderCategoryManager();
+        refreshAllDropdowns();
+        alert("कैटेगरी सफलतापूर्वक जोड़ दी गई!");
+    }
+
+    function deleteCategory(index) {
+        let catToDelete = shopSettings.categories[index];
+        if(confirm(`क्या आप "${catToDelete}" कैटेगरी को डिलीट करना चाहते हैं?`)) {
+            shopSettings.categories.splice(index, 1);
+            localStorage.setItem('shopSettings', JSON.stringify(shopSettings));
+            renderCategoryManager();
+            refreshAllDropdowns();
+            alert("कैटेगरी डिलीट कर दी गई है!");
+        }
+    }
+
+    function handleBarcodeSearchInput() {
+        const val = document.getElementById('barcodeScanInput').value.trim();
+        if(!val) return;
+        let index = productList.findIndex(p => p.barcode && p.barcode.toString().toLowerCase() === val.toLowerCase());
+        if(index !== -1) {
+            document.getElementById('billProductSelect').value = index;
+            fillBillDetails();
+        }
+    }
+
+    function handleBarcodeSearchKey(e) {
+        if(e.key === 'Enter') handleBarcodeSearchInput();
+    }
+
+    function handleNameSearchInput() {
+        const q = document.getElementById('nameSearchInput').value.toLowerCase();
+        const box = document.getElementById('nameSuggestionsBox');
+        box.innerHTML = "";
+        if(!q) { box.classList.add('hidden'); return; }
+
+        let matches = productList.filter(p => p.name.toLowerCase().includes(q));
+        if(matches.length > 0) {
+            box.classList.remove('hidden');
+            matches.forEach(item => {
+                let origIndex = productList.indexOf(item);
+                box.innerHTML += `<div class="suggestion-item" onclick="selectSuggestedProduct(${origIndex})">${item.name} (स्टॉक: ${item.qty} | ₹${item.price})</div>`;
+            });
+        } else {
+            box.classList.add('hidden');
+        }
+    }
+
+    function selectSuggestedProduct(index) {
+        document.getElementById('billProductSelect').value = index;
+        fillBillDetails();
+        document.getElementById('nameSuggestionsBox').classList.add('hidden');
+        document.getElementById('nameSearchInput').value = productList[index].name;
+    }
+
+    function handleCustNameSearch() {
+        const q = document.getElementById('custName').value.toLowerCase().trim();
+        const box = document.getElementById('custNameSuggestionsBox');
+        box.innerHTML = "";
+        if(!q) { box.classList.add('hidden'); return; }
+
+        let matches = customerMasterList.filter(c => c.name.toLowerCase().includes(q) || c.phone.includes(q));
+        if(matches.length > 0) {
+            box.classList.remove('hidden');
+            matches.forEach(c => {
+                box.innerHTML += `<div class="suggestion-item" onclick="selectCustomerSuggestion('${c.name}', '${c.phone}')">${c.name} - ${c.phone}</div>`;
+            });
+        } else {
+            box.classList.add('hidden');
+        }
+    }
+
+    function handleCustPhoneSearch() {
+        const q = document.getElementById('custPhone').value.toLowerCase().trim();
+        const box = document.getElementById('custPhoneSuggestionsBox');
+        box.innerHTML = "";
+        if(!q) { box.classList.add('hidden'); return; }
+
+        let matches = customerMasterList.filter(c => c.phone.includes(q) || c.name.toLowerCase().includes(q));
+        if(matches.length > 0) {
+            box.classList.remove('hidden');
+            matches.forEach(c => {
+                box.innerHTML += `<div class="suggestion-item" onclick="selectCustomerSuggestion('${c.name}', '${c.phone}')">${c.name} - ${c.phone}</div>`;
+            });
+        } else {
+            box.classList.add('hidden');
+        }
+    }
+
+    function selectCustomerSuggestion(name, phone) {
+        document.getElementById('custName').value = name;
+        document.getElementById('custPhone').value = phone;
+        document.getElementById('custNameSuggestionsBox').classList.add('hidden');
+        document.getElementById('custPhoneSuggestionsBox').classList.add('hidden');
+    }
+
+    function saveSingleProduct() {
+        const barcode = document.getElementById('newProdBarcode').value.trim();
+        const name = document.getElementById('newProdName').value.trim();
+        const cost = parseFloat(document.getElementById('newProdCost').value) || 0;
+        const price = parseFloat(document.getElementById('newProdPrice').value) || 0;
+        const qty = parseFloat(document.getElementById('newProdQty').value) || 0;
+        const unit = document.getElementById('newProdUnit').value;
+        const category = document.getElementById('newProdCategory').value;
+
+        if(!name || !price) {
+            alert("कृपया उत्पाद का नाम और बिक्री मूल्य दर्ज करें!");
+            return;
+        }
+
+        productList.push({ barcode, name, cost, price, qty, unit, category });
         localStorage.setItem('masterProductList', JSON.stringify(productList));
-        alert("इन्वेंट्री सफलतापूर्वक अपडेट और सेव हो गई!");
+        alert("उत्पाद सफलतापूर्वक सेव हो गया!");
+        document.getElementById('newProdBarcode').value = "";
+        document.getElementById('newProdName').value = "";
+        document.getElementById('newProdCost').value = "";
+        document.getElementById('newProdPrice').value = "";
+        document.getElementById('newProdQty').value = 1;
         updateProductDropdowns();
     }
 
-    function deleteSingleProduct(idx) {
-        if(confirm(`क्या आप "${productList[idx].name}" को डिलीट करना चाहते हैं?`)) {
-            productList.splice(idx, 1);
+    function renderInventoryTable() {
+        const tbody = document.getElementById('inventoryTableBody');
+        const q = document.getElementById('inventorySearchInput').value.toLowerCase();
+        tbody.innerHTML = "";
+        productList.forEach((item, index) => {
+            if(item.name.toLowerCase().includes(q) || (item.barcode && item.barcode.toLowerCase().includes(q))) {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><input type="text" id="inv_barcode_${index}" value="${item.barcode || ''}" style="margin:0; width:90px;"></td>
+                        <td><input type="text" id="inv_name_${index}" value="${item.name}" style="margin:0;"></td>
+                        <td><input type="number" id="inv_cost_${index}" value="${item.cost}" style="margin:0; width:70px;"></td>
+                        <td><input type="number" id="inv_price_${index}" value="${item.price}" style="margin:0; width:70px;"></td>
+                        <td><input type="number" id="inv_qty_${index}" value="${item.qty}" step="0.001" style="margin:0; width:70px;"></td>
+                        <td>
+                            <select id="inv_unit_${index}" style="margin:0; padding:4px;">
+                                <option value="Piece" ${item.unit === 'Piece' ? 'selected' : ''}>Piece</option>
+                                <option value="Kg" ${item.unit === 'Kg' ? 'selected' : ''}>Kg</option>
+                                <option value="Packet" ${item.unit === 'Packet' ? 'selected' : ''}>Packet</option>
+                                <option value="Gram" ${item.unit === 'Gram' ? 'selected' : ''}>Gram</option>
+                                <option value="Liter" ${item.unit === 'Liter' ? 'selected' : ''}>Liter</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn btn-success" style="padding:4px 8px; font-size:12px; margin-bottom:4px;" onclick="updateInventoryItem(${index})">💾</button>
+                            <button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteInventoryItem(${index})">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }
+        });
+    }
+
+    function updateInventoryItem(index) {
+        productList[index].barcode = document.getElementById(`inv_barcode_${index}`).value.trim();
+        productList[index].name = document.getElementById(`inv_name_${index}`).value;
+        productList[index].cost = parseFloat(document.getElementById(`inv_cost_${index}`).value) || 0;
+        productList[index].price = parseFloat(document.getElementById(`inv_price_${index}`).value) || 0;
+        productList[index].qty = parseFloat(document.getElementById(`inv_qty_${index}`).value) || 0;
+        productList[index].unit = document.getElementById(`inv_unit_${index}`).value;
+        localStorage.setItem('masterProductList', JSON.stringify(productList));
+        updateProductDropdowns();
+        alert("अपडेट सहेज लिया गया!");
+    }
+
+    function saveAllInventoryChanges() {
+        productList.forEach((item, index) => {
+            if(document.getElementById(`inv_name_${index}`)) {
+                item.barcode = document.getElementById(`inv_barcode_${index}`).value.trim();
+                item.name = document.getElementById(`inv_name_${index}`).value;
+                item.cost = parseFloat(document.getElementById(`inv_cost_${index}`).value) || 0;
+                item.price = parseFloat(document.getElementById(`inv_price_${index}`).value) || 0;
+                item.qty = parseFloat(document.getElementById(`inv_qty_${index}`).value) || 0;
+                item.unit = document.getElementById(`inv_unit_${index}`).value;
+            }
+        });
+        localStorage.setItem('masterProductList', JSON.stringify(productList));
+        updateProductDropdowns();
+        alert("सभी परिवर्तन सहेज लिए गए!");
+        renderInventoryTable();
+    }
+
+    function deleteInventoryItem(index) {
+        if(confirm("क्या आप वाकई इस उत्पाद को डिलीट करना चाहते हैं?")) {
+            productList.splice(index, 1);
             localStorage.setItem('masterProductList', JSON.stringify(productList));
             renderInventoryTable();
             updateProductDropdowns();
@@ -1175,143 +1348,157 @@
     }
 
     function deleteAllProducts() {
-        if(confirm("चेतावनी: क्या आप सारे प्रोडक्ट्स डिलीट करना चाहते हैं?")) {
+        if(confirm("चेतावनी: क्या आप वाकई स्टॉक के सभी उत्पादों को डिलीट करना चाहते हैं? यह क्रिया वापस नहीं लाई जा सकती!")) {
             productList = [];
             localStorage.setItem('masterProductList', JSON.stringify(productList));
             renderInventoryTable();
             updateProductDropdowns();
+            alert("सभी प्रोडक्ट्स डिलीट कर दिए गए हैं!");
         }
     }
 
-    function renderQuickRateTable() {
-        let tbody = document.getElementById('quickRateTableBody');
-        tbody.innerHTML = '';
-        let kw = document.getElementById('quickRateSearchInput').value.trim().toLowerCase();
-        productList.forEach((item, idx) => {
-            if(kw && !item.name.toLowerCase().includes(kw)) return;
-            tbody.innerHTML += `
-                <tr>
-                    <td>${item.barcode || 'N/A'}</td>
-                    <td>${item.name}</td>
-                    <td><input type="number" id="qr_cost_${idx}" value="${item.costPrice || 0}" style="margin:0; padding:4px;"></td>
-                    <td><input type="number" id="qr_price_${idx}" value="${item.price || 0}" style="margin:0; padding:4px;"></td>
-                    <td><button class="btn btn-success" style="padding:4px 8px; font-size:12px;" onclick="saveSingleQuickRate(${idx})">सेव</button></td>
-                </tr>
-            `;
-        });
-    }
-
-    function saveSingleQuickRate(idx) {
-        let c = document.getElementById(`qr_cost_${idx}`).value;
-        let p = document.getElementById(`qr_price_${idx}`).value;
-        productList[idx].costPrice = parseFloat(c) || 0;
-        productList[idx].price = parseFloat(p) || 0;
-        localStorage.setItem('masterProductList', JSON.stringify(productList));
-        alert("रेट अपडेट हो गया!");
-        updateProductDropdowns();
-    }
-
-    function saveAllQuickRates() {
-        productList.forEach((item, idx) => {
-            let c = document.getElementById(`qr_cost_${idx}`);
-            let p = document.getElementById(`qr_price_${idx}`);
-            if(c) item.costPrice = parseFloat(c.value) || 0;
-            if(p) item.price = parseFloat(p.value) || 0;
-        });
-        localStorage.setItem('masterProductList', JSON.stringify(productList));
-        alert("सभी रेट्स सफलतापूर्वक सेव हो गए!");
-        updateProductDropdowns();
-    }
-
     function renderCustomerDirectory() {
-        let tbody = document.getElementById('customerTableBody');
-        tbody.innerHTML = '';
-        let kw = document.getElementById('searchCustomerInput').value.trim().toLowerCase();
-        customerList.forEach((cust, idx) => {
-            if(kw && !cust.name.toLowerCase().includes(kw) && !cust.phone.includes(kw)) return;
-            let style = cust.isDeleted ? 'color: var(--danger); font-weight:bold;' : '';
-            tbody.innerHTML += `
-                <tr style="${style}">
-                    <td>${cust.name}</td>
-                    <td>${cust.phone}</td>
-                    <td>₹${cust.totalSpent.toFixed(2)}</td>
-                    <td>${cust.regDate}</td>
-                    <td>
-                        <button class="btn btn-whatsapp" style="padding:4px 8px; font-size:12px; width:auto;" onclick="window.open('https://api.whatsapp.com/send?phone=${cust.phone}', '_blank')">💬</button>
-                    </td>
-                </tr>
-            `;
+        const tbody = document.getElementById('customerTableBody');
+        const q = document.getElementById('searchCustomerInput').value.toLowerCase();
+        tbody.innerHTML = "";
+        customerMasterList.forEach(c => {
+            if(c.name.toLowerCase().includes(q) || c.phone.includes(q)) {
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight:bold;">${c.name}</td>
+                        <td>${c.phone}</td>
+                        <td><a href="https://api.whatsapp.com/send?phone=${c.phone}" target="_blank" class="btn btn-whatsapp" style="padding:6px 10px; font-size:12px;">WhatsApp</a></td>
+                        <td><a href="tel:${c.phone}" class="btn btn-call" style="padding:6px 10px; font-size:12px;">कॉल करें</a></td>
+                    </tr>
+                `;
+            }
         });
     }
 
     function renderCustomerPurchaseHistory() {
-        let tbody = document.getElementById('customerPurchaseHistoryTableBody');
-        tbody.innerHTML = '';
-        let kw = document.getElementById('searchCustHistoryInput').value.trim().toLowerCase();
-        salesHistory.forEach(sale => {
-            if(kw && !sale.customerName.toLowerCase().includes(kw) && !sale.customerPhone.includes(kw)) return;
-            let itemStr = sale.items.map(i => `${i.name} (${i.qty} ${i.unit})`).join(', ');
-            let style = sale.isDeleted ? 'color: var(--danger); font-weight:bold;' : '';
-            tbody.innerHTML += `
-                <tr style="${style}">
-                    <td>${sale.date}</td>
-                    <td>${sale.customerName}</td>
-                    <td>${sale.customerPhone}</td>
-                    <td>${itemStr}</td>
-                    <td>₹${sale.grandTotal.toFixed(2)}</td>
-                    <td>
-                        <button class="btn btn-whatsapp" style="padding:4px 8px; font-size:12px; width:auto;" onclick="window.open('https://api.whatsapp.com/send?phone=${sale.customerPhone}', '_blank')">💬</button>
-                    </td>
-                </tr>
-            `;
+        const tbody = document.getElementById('customerPurchaseHistoryTableBody');
+        const q = document.getElementById('searchCustHistoryInput').value.toLowerCase();
+        tbody.innerHTML = "";
+
+        const activeSaleIds = new Set(salesHistory.map(s => s.id));
+
+        customerPurchaseHistory.forEach((sale, index) => {
+            if(sale.custName.toLowerCase().includes(q) || sale.custPhone.includes(q)) {
+                let itemsDesc = sale.items.map(i => `${i.name} (${i.qty} ${i.unit})`).join(', ');
+                let isDeletedFromSales = !activeSaleIds.has(sale.id);
+                let rowStyle = isDeletedFromSales ? "background-color: #fee2e2; color: #b91c1c;" : "";
+
+                tbody.innerHTML += `
+                    <tr style="${rowStyle}">
+                        <td>${sale.date}</td>
+                        <td style="font-weight:bold;">${sale.custName}</td>
+                        <td>${sale.custPhone}</td>
+                        <td style="text-align:left; font-size:13px;">${itemsDesc} ${isDeletedFromSales ? '<br><small><b>(सेलिंग रिपोर्ट से हटाया गया)</b></small>' : ''}</td>
+                        <td><b>₹${sale.total.toFixed(2)}</b></td>
+                        <td>
+                            <button class="btn btn-primary" style="padding:4px 8px; font-size:12px; margin-bottom:4px;" onclick="editSaleBill(${index})">✏️ एडिट</button>
+                            <button class="btn btn-danger" style="padding:4px 8px; font-size:12px; margin-bottom:4px;" onclick="deleteCustomerHistoryRecord(${index})">🗑️ डिलीट</button>
+                            <button class="btn btn-whatsapp" style="padding:4px 8px; font-size:12px; margin-bottom:4px;" onclick="reWhatsAppBillHistory(${index})">🟢 WhatsApp</button>
+                            <button class="btn btn-warning" style="padding:4px 8px; font-size:12px;" onclick="reMessageBillHistory(${index})">💬 मैसेज</button>
+                        </td>
+                    </tr>
+                `;
+            }
         });
+    }
+
+    function deleteCustomerHistoryRecord(index) {
+        if(confirm("क्या आप इस ग्राहक इतिहास रिकॉर्ड को हमेशा के लिए हटाना चाहते हैं?")) {
+            customerPurchaseHistory.splice(index, 1);
+            localStorage.setItem('customerPurchaseHistoryList', JSON.stringify(customerPurchaseHistory));
+            renderCustomerPurchaseHistory();
+        }
+    }
+
+    function editSaleBill(index) {
+        let sale = customerPurchaseHistory[index];
+        editingSaleIndex = salesHistory.findIndex(s => s.id === sale.id);
+        currentBillItems = JSON.parse(JSON.stringify(sale.items));
+        document.getElementById('custName').value = sale.custName;
+        document.getElementById('custPhone').value = sale.custPhone;
+        document.getElementById('customBillNoteText').value = sale.note || shopSettings.defaultBillNote;
+        switchTab('billingTab');
+        renderBillTable();
+        alert("यह पुराना बिल काउंटर में लोड कर दिया गया है। बदलाव करके दोबारा 'सेव' कर सकते हैं।");
+    }
+
+    function reWhatsAppBillHistory(index) {
+        let sale = customerPurchaseHistory[index];
+        let msg = `🛍️ *${shopSettings.shopName}* 🛍️\nदिनांक: ${sale.date}\nग्राहक: ${sale.custName}\n--------------------------\n`;
+        sale.items.forEach(it => {
+            msg += `${it.name} - ${it.qty} ${it.unit} x ₹${it.price} = ₹${it.total.toFixed(2)}\n`;
+        });
+        msg += `--------------------------\n*कुल योग: ₹${sale.total.toFixed(2)}*\n${sale.note || ''}`;
+        let waUrl = `https://api.whatsapp.com/send?phone=${sale.custPhone !== 'N/A' ? sale.custPhone : ''}&text=${encodeURIComponent(msg)}`;
+        window.open(waUrl, '_blank');
+    }
+
+    function reMessageBillHistory(index) {
+        let sale = customerPurchaseHistory[index];
+        let msg = `🛍️ ${shopSettings.shopName} 🛍️\nदिनांक: ${sale.date}\nग्राहक: ${sale.custName}\n--------------------------\n`;
+        sale.items.forEach(it => {
+            msg += `${it.name} - ${it.qty} ${it.unit} x ₹${it.price} = ₹${it.total.toFixed(2)}\n`;
+        });
+        msg += `--------------------------\nकुल योग: ₹${sale.total.toFixed(2)}\n${sale.note || ''}`;
+        let smsUrl = `sms:${sale.custPhone !== 'N/A' ? sale.custPhone : ''}?body=${encodeURIComponent(msg)}`;
+        window.open(smsUrl, '_blank');
     }
 
     function renderSellingReport() {
-        let tbody = document.getElementById('salesReportTableBody');
-        tbody.innerHTML = '';
-        salesHistory.forEach((sale, idx) => {
+        const tbody = document.getElementById('salesReportTableBody');
+        tbody.innerHTML = "";
+        salesHistory.forEach((sale, index) => {
             tbody.innerHTML += `
                 <tr>
                     <td>${sale.date}</td>
-                    <td>${sale.customerName}</td>
-                    <td>${sale.customerPhone}</td>
-                    <td>₹${sale.grandTotal.toFixed(2)}</td>
-                    <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteSaleRecord(${idx})">🗑️</button></td>
+                    <td>${sale.custName}</td>
+                    <td>${sale.custPhone}</td>
+                    <td><b>₹${sale.total.toFixed(2)}</b></td>
+                    <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteSaleRecord(${index})">🗑️ डिलीट</button></td>
                 </tr>
             `;
         });
     }
 
-    function deleteSaleRecord(idx) {
-        if(confirm("क्या आप इस बिक्री रिकॉर्ड को हटाना चाहते हैं?")) {
-            salesHistory[idx].isDeleted = true;
-            let phone = salesHistory[idx].customerPhone;
-            let cObj = customerList.find(c => c.phone === phone);
-            if(cObj) cObj.isDeleted = true;
+    function deleteSaleRecord(index) {
+        if(confirm("क्या आप इस रिपोर्ट को डिलीट करना चाहते हैं? बिके हुए प्रोडक्ट्स वापस स्टॉक में जुड़ जाएंगे।")) {
+            let sale = salesHistory[index];
+            sale.items.forEach(it => {
+                if(it.productIndex !== null && productList[it.productIndex]) {
+                    productList[it.productIndex].qty += it.qty;
+                }
+            });
+            salesHistory.splice(index, 1);
             localStorage.setItem('salesHistoryList', JSON.stringify(salesHistory));
-            localStorage.setItem('customerMasterList', JSON.stringify(customerList));
+            localStorage.setItem('masterProductList', JSON.stringify(productList));
             renderSellingReport();
+            alert("रिपोर्ट डिलीट कर दी गई और स्टॉक रीस्टोर हो गया!");
         }
     }
 
     function clearSalesHistory() {
-        if(confirm("सभी बिक्री रिपोर्ट साफ़ करना चाहते हैं?")) {
+        if(confirm("क्या आप सारी सेलिंग रिपोर्ट्स साफ़ करना चाहते हैं?")) {
             salesHistory = [];
-            localStorage.removeItem('salesHistoryList');
+            localStorage.setItem('salesHistoryList', JSON.stringify(salesHistory));
             renderSellingReport();
+            alert("सभी रिपोर्ट्स साफ़ कर दी गई हैं!");
         }
     }
 
     function renderShortStockTable() {
-        let tbody = document.getElementById('shortStockTableBody');
-        tbody.innerHTML = '';
+        const tbody = document.getElementById('shortStockTableBody');
+        tbody.innerHTML = "";
         productList.forEach(item => {
-            if(parseFloat(item.qty) < 5) {
+            if(item.qty < 5) {
                 tbody.innerHTML += `
                     <tr>
                         <td>${item.barcode || 'N/A'}</td>
-                        <td>${item.name}</td>
+                        <td style="font-weight:bold;">${item.name}</td>
                         <td style="color:var(--danger); font-weight:bold;">${item.qty} ${item.unit}</td>
                         <td>₹${item.price}</td>
                     </tr>
@@ -1320,64 +1507,96 @@
         });
     }
 
+    function renderQuickRateTable() {
+        const tbody = document.getElementById('quickRateTableBody');
+        const q = document.getElementById('quickRateSearchInput').value.toLowerCase();
+        tbody.innerHTML = "";
+        productList.forEach((item, index) => {
+            if(item.name.toLowerCase().includes(q)) {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.barcode || 'N/A'}</td>
+                        <td style="text-align:left;">${item.name}</td>
+                        <td><input type="number" id="q_cost_${index}" value="${item.cost}" style="margin:0; width:80px;"></td>
+                        <td><input type="number" id="q_price_${index}" value="${item.price}" style="margin:0; width:80px;"></td>
+                        <td><button class="btn btn-success" style="padding:4px 8px; font-size:12px;" onclick="saveQuickRate(${index})">💾 सेव</button></td>
+                    </tr>
+                `;
+            }
+        });
+    }
+
+    function saveQuickRate(index) {
+        productList[index].cost = parseFloat(document.getElementById(`q_cost_${index}`).value) || 0;
+        productList[index].price = parseFloat(document.getElementById(`q_price_${index}`).value) || 0;
+        localStorage.setItem('masterProductList', JSON.stringify(productList));
+        alert("रेट सेव हो गया!");
+    }
+
+    function saveAllQuickRates() {
+        productList.forEach((item, index) => {
+            if(document.getElementById(`q_price_${index}`)) {
+                item.cost = parseFloat(document.getElementById(`q_cost_${index}`).value) || 0;
+                item.price = parseFloat(document.getElementById(`q_price_${index}`).value) || 0;
+            }
+        });
+        localStorage.setItem('masterProductList', JSON.stringify(productList));
+        alert("सभी रेट्स सेव कर दिए गए!");
+    }
+
     function renderProfitReport() {
-        let tbody = document.getElementById('profitReportTableBody');
-        tbody.innerHTML = '';
+        const tbody = document.getElementById('profitReportTableBody');
+        tbody.innerHTML = "";
         let totalNetProfit = 0;
         let profitMap = {};
 
         salesHistory.forEach(sale => {
-            if(sale.isDeleted) return;
-            sale.items.forEach(i => {
-                let profit = (i.price - (i.costPrice || 0)) * i.qty;
-                totalNetProfit += profit;
-                if(!profitMap[i.name]) {
-                    profitMap[i.name] = { qty: 0, sale: 0, profit: 0 };
+            sale.items.forEach(it => {
+                let costPrice = 0;
+                if(it.productIndex !== null && productList[it.productIndex]) {
+                    costPrice = productList[it.productIndex].cost || 0;
                 }
-                profitMap[i.name].qty += i.qty;
-                profitMap[i.name].sale += i.total;
-                profitMap[i.name].profit += profit;
+                let itemProfit = (it.price - costPrice) * it.qty;
+                totalNetProfit += itemProfit;
+
+                let key = it.name.trim().toLowerCase();
+                if(!profitMap[key]) {
+                    profitMap[key] = { name: it.name, qty: 0, sale: 0, profit: 0 };
+                }
+                profitMap[key].qty += it.qty;
+                profitMap[key].sale += it.total;
+                profitMap[key].profit += itemProfit;
             });
         });
 
         document.getElementById('totalProfitDisplay').innerText = `₹${totalNetProfit.toFixed(2)}`;
-        for(let name in profitMap) {
-            let pData = profitMap[name];
+
+        Object.keys(profitMap).forEach(key => {
+            let p = profitMap[key];
             tbody.innerHTML += `
                 <tr>
-                    <td>${name}</td>
-                    <td>${pData.qty}</td>
-                    <td>₹${pData.sale.toFixed(2)}</td>
-                    <td style="color:var(--success); font-weight:bold;">₹${pData.profit.toFixed(2)}</td>
+                    <td style="text-align:left;">${p.name}</td>
+                    <td>${p.qty.toFixed(3)}</td>
+                    <td>₹${p.sale.toFixed(2)}</td>
+                    <td style="color:var(--success); font-weight:bold;">₹${p.profit.toFixed(2)}</td>
+                    <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteProfitItem('${key}')">🗑️ डिलीट</button></td>
                 </tr>
             `;
-        }
+        });
     }
 
-    function saveSingleProduct() {
-        let barcode = document.getElementById('newProdBarcode').value.trim();
-        let name = document.getElementById('newProdName').value.trim();
-        let costPrice = parseFloat(document.getElementById('newProdCost').value) || 0;
-        let price = parseFloat(document.getElementById('newProdPrice').value) || 0;
-        let qty = parseFloat(document.getElementById('newProdQty').value) || 1;
-        let unit = document.getElementById('newProdUnit').value;
-        let category = document.getElementById('newProdCategory').value;
-
-        if(!name) {
-            alert("कृपया प्रोडक्ट का नाम दर्ज करें!");
-            return;
+    function deleteProfitItem(productKey) {
+        if(confirm(`क्या आप इस उत्पाद का लाभ रिकॉर्ड हटाना चाहते हैं?`)) {
+            salesHistory.forEach(sale => {
+                sale.items = sale.items.filter(item => item.name.trim().toLowerCase() !== productKey);
+            });
+            salesHistory = salesHistory.filter(sale => sale.items.length > 0);
+            
+            localStorage.setItem('salesHistoryList', JSON.stringify(salesHistory));
+            renderProfitReport();
+            renderSellingReport();
+            alert("उत्पाद का लाभ रिकॉर्ड हटा दिया गया है!");
         }
-
-        productList.push({ barcode, name, costPrice, price, qty, unit, category });
-        localStorage.setItem('masterProductList', JSON.stringify(productList));
-        alert("नया प्रोडक्ट सफलता पूर्वक जोड़ दिया गया!");
-        
-        document.getElementById('newProdBarcode').value = "";
-        document.getElementById('newProdName').value = "";
-        document.getElementById('newProdCost').value = "";
-        document.getElementById('newProdPrice').value = "";
-        document.getElementById('newProdQty').value = "1";
-        updateProductDropdowns();
     }
 
     function saveSettingsData() {
@@ -1387,77 +1606,109 @@
         localStorage.setItem('shopSettings', JSON.stringify(shopSettings));
         document.getElementById('shopTitleHeader').innerText = "🛒 " + shopSettings.shopName;
         document.getElementById('customBillNoteText').value = shopSettings.defaultBillNote;
-        alert("सेटिंग्स सहेजी गईं!");
+        alert("सेटिंग्स सफलतापूर्वक सहेज ली गईं!");
     }
 
-    function handleExcelFileUpload(event) {
-        let file = event.target.files[0];
-        if (!file) return;
-        let reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('bulkDataInput').value = e.target.result;
-        };
-        reader.readAsText(file);
+    function exportProductsToExcel() {
+        let csv = "Barcode,Name,PurchasePrice,SellingPrice,StockQty,Unit,Category\n";
+        productList.forEach(p => {
+            csv += `"${p.barcode || ''}","${p.name}",${p.cost || 0},${p.price || 0},${p.qty || 0},"${p.unit || 'Piece'}","${p.category || 'अन्य'}"\n`;
+        });
+        let blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Inventory_Stock_List.csv";
+        link.click();
     }
 
-    function processBulkUpload() {
-        let rawData = document.getElementById('bulkDataInput').value.trim();
-        if (!rawData) {
-            alert("कृपया डेटा दर्ज करें या फाइल अपलोड करें!");
-            return;
-        }
-        
-        let lines = rawData.split('\n');
-        let addedCount = 0;
-        
-        lines.forEach((line, index) => {
-            if (index === 0 && (line.toLowerCase().includes('barcode') || line.toLowerCase().includes('name') || line.toLowerCase().includes('आइटम'))) {
-                return;
-            }
-            if (!line.trim()) return;
+    function exportSellingReportToExcel() {
+        let csv = "DateTime,CustomerName,CustomerPhone,TotalAmount\n";
+        salesHistory.forEach(s => {
+            csv += `"${s.date}","${s.custName}","${s.custPhone}",${s.total}\n`;
+        });
+        let blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Sales_Report.csv";
+        link.click();
+    }
 
-            let cols = line.split(/,|\t|;/).map(col => col.trim().replace(/^["']|["']$/g, ''));
-            
-            if (cols.length >= 2) {
-                let barcode = cols[0] || ('BC_' + Date.now() + Math.floor(Math.random()*1000));
-                let name = cols[1] || 'Unknown Product';
-                let costPrice = parseFloat(cols[2]) || 0;
-                let price = parseFloat(cols[3]) || 0;
-                let unit = cols[4] || 'Piece';
-                let category = cols[5] || (shopSettings.categories && shopSettings.categories[0]) || 'अन्य';
-                let qty = parseFloat(cols[6]) || 1;
+    function exportCustomerPurchaseHistoryToExcel() {
+        let csv = "DateTime,CustomerName,CustomerPhone,ItemsDetail,TotalAmount\n";
+        customerPurchaseHistory.forEach(s => {
+            let itemsDesc = s.items.map(i => `${i.name} (${i.qty} ${i.unit})`).join(' | ');
+            csv += `"${s.date}","${s.custName}","${s.custPhone}","${itemsDesc}",${s.total}\n`;
+        });
+        let blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Customer_Purchase_History.csv";
+        link.click();
+    }
 
-                productList.push({
-                    barcode: barcode,
-                    name: name,
-                    costPrice: costPrice,
-                    price: price,
-                    unit: unit,
-                    category: category,
-                    qty: qty
-                });
-                addedCount++;
+    function exportShortStockToExcel() {
+        let csv = "Barcode,Name,Stock,SellingPrice\n";
+        productList.forEach(p => {
+            if(p.qty < 5) {
+                csv += `"${p.barcode || ''}","${p.name}",${p.qty},${p.price}\n`;
             }
         });
+        let blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Short_Stock_List.csv";
+        link.click();
+    }
 
-        localStorage.setItem('masterProductList', JSON.stringify(productList));
-        updateProductDropdowns();
-        alert(`सफलतापूर्वक ${addedCount} प्रोडक्ट्स डंप / इम्पोर्ट कर दिए गए!`);
-        
-        document.getElementById('bulkDataInput').value = "";
-        document.getElementById('excelFile').value = "";
+    function exportQuickRateToExcel() {
+        let csv = "Barcode,Name,PurchasePrice,SellingPrice\n";
+        productList.forEach(p => {
+            csv += `"${p.barcode || ''}","${p.name}",${p.cost},${p.price}\n`;
+        });
+        let blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Quick_Rate_List.csv";
+        link.click();
+    }
+
+    function exportProfitReportToExcel() {
+        let csv = "ProductName,TotalQtySold,TotalSale,NetProfit\n";
+        let profitMap = {};
+        salesHistory.forEach(sale => {
+            sale.items.forEach(it => {
+                let costPrice = 0;
+                if(it.productIndex !== null && productList[it.productIndex]) {
+                    costPrice = productList[it.productIndex].cost || 0;
+                }
+                let itemProfit = (it.price - costPrice) * it.qty;
+                let key = it.name.trim().toLowerCase();
+                if(!profitMap[key]) { profitMap[key] = { name: it.name, qty: 0, sale: 0, profit: 0 }; }
+                profitMap[key].qty += it.qty;
+                profitMap[key].sale += it.total;
+                profitMap[key].profit += itemProfit;
+            });
+        });
+        Object.keys(profitMap).forEach(key => {
+            let p = profitMap[key];
+            csv += `"${p.name}",${p.qty},${p.sale},${p.profit}\n`;
+        });
+        let blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Profit_Report.csv";
+        link.click();
     }
 
     function exportDataJSON() {
-        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
-            shopSettings, productList, salesHistory, customerList
-        }));
-        let dlAnchor = document.createElement('a');
-        dlAnchor.setAttribute("href", dataStr);
-        dlAnchor.setAttribute("download", "smart_kirana_backup.json");
-        document.body.appendChild(dlAnchor);
-        dlAnchor.click();
-        dlAnchor.remove();
+        let backupObj = { shopSettings, productList, salesHistory, customerMasterList, customerPurchaseHistory };
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
+        let downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "SmartKirana_Backup_" + new Date().toISOString().slice(0,10) + ".json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
     }
 
     function importDataJSON(event) {
@@ -1467,11 +1718,19 @@
         reader.onload = function(e) {
             try {
                 let data = JSON.parse(e.target.result);
-                if(data.shopSettings) { shopSettings = data.shopSettings; localStorage.setItem('shopSettings', JSON.stringify(shopSettings)); }
-                if(data.productList) { productList = data.productList; localStorage.setItem('masterProductList', JSON.stringify(productList)); }
-                if(data.salesHistory) { salesHistory = data.salesHistory; localStorage.setItem('salesHistoryList', JSON.stringify(salesHistory)); }
-                if(data.customerList) { customerList = data.customerList; localStorage.setItem('customerMasterList', JSON.stringify(customerList)); }
-                alert("बैकअप डेटा सफलता पूर्वक रीस्टोर हो गया!");
+                if(data.shopSettings) shopSettings = data.shopSettings;
+                if(data.productList) productList = data.productList;
+                if(data.salesHistory) salesHistory = data.salesHistory;
+                if(data.customerMasterList) customerMasterList = data.customerMasterList;
+                if(data.customerPurchaseHistory) customerPurchaseHistory = data.customerPurchaseHistory;
+
+                localStorage.setItem('shopSettings', JSON.stringify(shopSettings));
+                localStorage.setItem('masterProductList', JSON.stringify(productList));
+                localStorage.setItem('salesHistoryList', JSON.stringify(salesHistory));
+                localStorage.setItem('customerMasterList', JSON.stringify(customerMasterList));
+                localStorage.setItem('customerPurchaseHistoryList', JSON.stringify(customerPurchaseHistory));
+
+                alert("बैकअप डेटा सफलतापूर्वक रीस्टोर (Restore) हो गया!");
                 location.reload();
             } catch(err) {
                 alert("अमान्य JSON फाइल!");
@@ -1512,6 +1771,104 @@
         } else {
             document.getElementById('scanner-container').style.display = 'none';
         }
+    }
+
+    function handleStockBarcodeSearch() {
+        const val = document.getElementById('stockInBarcodeSearch').value.trim();
+        if(!val) return;
+        let index = productList.findIndex(p => p.barcode && p.barcode.toString().toLowerCase() === val.toLowerCase());
+        if(index !== -1) {
+            document.getElementById('stockInProductSelect').value = index;
+            fillStockInDetailsFromDropdown();
+        }
+    }
+
+    function handleStockNameSearch() {
+        const q = document.getElementById('stockInNameSearch').value.toLowerCase();
+        const box = document.getElementById('stockNameSuggestionsBox');
+        box.innerHTML = "";
+        if(!q) { box.classList.add('hidden'); return; }
+
+        let matches = productList.filter(p => p.name.toLowerCase().includes(q));
+        if(matches.length > 0) {
+            box.classList.remove('hidden');
+            matches.forEach(item => {
+                let origIndex = productList.indexOf(item);
+                box.innerHTML += `<div class="suggestion-item" onclick="selectStockSuggestedProduct(${origIndex})">${item.name} (स्टॉक: ${item.qty})</div>`;
+            });
+        } else {
+            box.classList.add('hidden');
+        }
+    }
+
+    function selectStockSuggestedProduct(index) {
+        document.getElementById('stockInProductSelect').value = index;
+        fillStockInDetailsFromDropdown();
+        document.getElementById('stockNameSuggestionsBox').classList.add('hidden');
+        document.getElementById('stockInNameSearch').value = productList[index].name;
+    }
+
+    function fillStockInDetailsFromDropdown() {
+        const index = document.getElementById('stockInProductSelect').value;
+        if(index === "") return;
+        const prod = productList[index];
+        document.getElementById('stockInUnitDisplay').value = prod.unit || "Piece";
+        document.getElementById('stockInCurrentQtyDisplay').value = prod.qty;
+    }
+
+    function addStockQuantity() {
+        const index = document.getElementById('stockInProductSelect').value;
+        const addQty = parseFloat(document.getElementById('stockInQty').value);
+        if(index === "" || isNaN(addQty)) {
+            alert("कृपया उत्पाद और जोड़ी जाने वाली मात्रा सही भरें!");
+            return;
+        }
+        productList[index].qty += addQty;
+        localStorage.setItem('masterProductList', JSON.stringify(productList));
+        alert("स्टॉक में माल सफलतापूर्वक जोड़ दिया गया!");
+        fillStockInDetailsFromDropdown();
+        document.getElementById('stockInQty').value = 1;
+        document.getElementById('stockInBarcodeSearch').value = "";
+        document.getElementById('stockInNameSearch').value = "";
+    }
+
+    function processBulkUpload() {
+        const text = document.getElementById('bulkDataInput').value.trim();
+        if(!text) {
+            alert("कृपया डेटा दर्ज करें!");
+            return;
+        }
+        let lines = text.split('\n');
+        let count = 0;
+        lines.forEach(line => {
+            let parts = line.split(',').map(s => s.trim());
+            if(parts.length >= 2) {
+                productList.push({
+                    barcode: parts[0] || "",
+                    name: parts[1] || "आइटम",
+                    cost: parseFloat(parts[2]) || 0,
+                    price: parseFloat(parts[3]) || 0,
+                    unit: parts[4] || "Piece",
+                    category: parts[5] || "अन्य",
+                    qty: parseFloat(parts[6]) || 1
+                });
+                count++;
+            }
+        });
+        localStorage.setItem('masterProductList', JSON.stringify(productList));
+        alert(`${count} प्रोडक्ट्स सफलतापर्वक इम्पोर्ट हो गए!`);
+        document.getElementById('bulkDataInput').value = "";
+        updateProductDropdowns();
+    }
+
+    function handleExcelFileUpload(event) {
+        let file = event.target.files[0];
+        if(!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('bulkDataInput').value = e.target.result;
+        };
+        reader.readAsText(file);
     }
 </script>
 </body>
